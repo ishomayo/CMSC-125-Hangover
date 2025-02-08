@@ -15,4 +15,4 @@ The elements (videos, and such) for this project can be accessed through this li
 
 # How to Run
 
-To run the application...
+To run the application..
