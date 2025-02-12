@@ -1,4 +1,3 @@
-import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -11,6 +10,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
 import javax.swing.*;
@@ -18,136 +19,183 @@ import java.awt.*;
 import java.io.File;
 
 public class GUI {
-    private static final String SPLASH_VIDEO_PATH = "C:\\Users\\Eugene\\Desktop\\125\\Hangover\\src\\Loading Screen.mp4"; // Change this to your splash screen video file path
-    private static final String LOBBY_VIDEO_PATH = "C:\\Users\\Eugene\\Desktop\\125\\Hangover\\src\\Background_Lobby.mp4"; // Change this to your lobby video file path
-    private static final String IMAGE_PATH = "C:\\Users\\Eugene\\Desktop\\125\\Hangover\\src\\Title.png"; // Change this to your image file path
-    private static final int SPLASH_SCREEN_DURATION = 5000; // 5 seconds
-    private static final int FADE_DURATION = 3000; // 3 seconds
-
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GUI::createGUI);
     }
 
-    private static void createGUI() {
-        JFrame frame = new JFrame("Video Background GUI");
+    private static void createGUI() {   
+        JFrame frame = new JFrame();
+        frame.setUndecorated(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 600);
+        frame.setSize(Constants.FRAME_SIZE.width, Constants.FRAME_SIZE.height);
         frame.setResizable(false);
-        frame.setLocationRelativeTo(null); // This centers the frame
-
-        // Use a BorderLayout with the video in the center
+        frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
 
-        // Create the JFXPanel for video rendering
-        JFXPanel jfxPanel = new JFXPanel(); // JavaFX Panel inside Swing
+        JFXPanel jfxPanel = new JFXPanel();
         frame.add(jfxPanel, BorderLayout.CENTER);
 
-        // Initialize JavaFX thread
         Platform.runLater(() -> initFX(jfxPanel, frame));
-
-        // Make the frame visible
         frame.setVisible(true);
     }
 
-    private static void initFX(JFXPanel jfxPanel, JFrame frame) {
-        // Load splash screen video
-        File splashFile = new File(SPLASH_VIDEO_PATH);
-        if (!splashFile.exists()) {
-            System.out.println("Splash screen video file not found!");
-            return;
+    private static MediaPlayer createMediaPlayer(String filePath, boolean autoPlay, int cycleCount) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            System.out.println(filePath + " file not found!");
+            return null;
         }
+        MediaPlayer mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
+        mediaPlayer.setAutoPlay(autoPlay);
+        mediaPlayer.setCycleCount(cycleCount);
+        return mediaPlayer;
+    }
 
-        Media splashMedia = new Media(splashFile.toURI().toString());
-        MediaPlayer splashMediaPlayer = new MediaPlayer(splashMedia);
-        splashMediaPlayer.setAutoPlay(true);
+    private static MediaView createMediaView(MediaPlayer mediaPlayer, double width, double height) {
+        MediaView mediaView = new MediaView(mediaPlayer);
+        mediaView.setFitWidth(width);
+        mediaView.setFitHeight(height);
+        mediaView.setPreserveRatio(false);
+        return mediaView;
+    }
 
-        MediaView splashMediaView = new MediaView(splashMediaPlayer);
+    private static void initFX(JFXPanel jfxPanel, JFrame frame) {
+        MediaPlayer splashMediaPlayer = createMediaPlayer(Constants.SPLASH_VIDEO_PATH, true, 1);
+        if (splashMediaPlayer == null) return;
 
-        // Resize the video to fit 1000x600 dimensions (no aspect ratio)
-        splashMediaView.setFitWidth(1000);
-        splashMediaView.setFitHeight(600);
-        splashMediaView.setPreserveRatio(false); // Ignore aspect ratio to fully fit the frame
+        splashMediaPlayer.setStopTime(Duration.seconds(1)); // Set splash screen duration to 5 seconds
 
+        MediaView splashMediaView = createMediaView(splashMediaPlayer, 1000, 600);
         StackPane splashPane = new StackPane(splashMediaView);
-        Scene splashScene = new Scene(splashPane, Color.BLACK);
-        jfxPanel.setScene(splashScene);
+        jfxPanel.setScene(new Scene(splashPane, Color.BLACK));
 
-        // Play splash screen video and fade out after 5 seconds
-        splashMediaPlayer.setOnEndOfMedia(() -> {
-            Platform.runLater(() -> {
-                // Fade out to black after splash screen video ends
-                FadeTransition fadeOut = new FadeTransition(Duration.millis(FADE_DURATION), splashPane);
-                fadeOut.setFromValue(1.0);
-                fadeOut.setToValue(0.0);
-                fadeOut.setOnFinished(event -> fadeToLobby(jfxPanel, frame));
-                fadeOut.play();
-            });
-        });
+        splashMediaPlayer.setOnEndOfMedia(() -> Platform.runLater(() -> fadeToLobby(jfxPanel, frame)));
     }
 
     private static void fadeToLobby(JFXPanel jfxPanel, JFrame frame) {
-        // Load lobby video
-        File lobbyFile = new File(LOBBY_VIDEO_PATH);
-        if (!lobbyFile.exists()) {
-            System.out.println("Lobby video file not found!");
-            return;
-        }
+        MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
+        if (lobbyMediaPlayer == null) return;
 
-        Media lobbyMedia = new Media(lobbyFile.toURI().toString());
-        MediaPlayer lobbyMediaPlayer = new MediaPlayer(lobbyMedia);
-        lobbyMediaPlayer.setCycleCount(MediaPlayer.INDEFINITE); // Loop the lobby video indefinitely
-        lobbyMediaPlayer.setAutoPlay(true);
+        MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
+        Pane lobbyPane = new Pane(lobbyMediaView);
 
-        MediaView lobbyMediaView = new MediaView(lobbyMediaPlayer);
-
-        // Resize the video to fit 1000x600 dimensions (no aspect ratio)
-        lobbyMediaView.setFitWidth(1000);
-        lobbyMediaView.setFitHeight(600);
-        lobbyMediaView.setPreserveRatio(false); // Ignore aspect ratio to fully fit the frame
-
-        // Create a Pane for absolute positioning
-        Pane lobbyPane = new Pane();
-        lobbyPane.getChildren().add(lobbyMediaView);
-
-        // Create an ImageView for the top middle image
-        Image image = new Image("file:" + IMAGE_PATH); // Load image from the file path
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(700); // Adjust the width of the image
-        imageView.setPreserveRatio(true); // Maintain the aspect ratio of the image
-        imageView.setLayoutX((1000 - imageView.getFitWidth()) / 2); // Center horizontally at the top
-        imageView.setLayoutY(10); // Adjust vertical position (top of the frame)
-
-        // Add the image to the lobby pane
+        ImageView imageView = new ImageView(new Image("file:" + Constants.IMAGE_PATH));
+        imageView.setFitWidth(700);
+        imageView.setPreserveRatio(true);
+        imageView.setLayoutX((1000 - imageView.getFitWidth()) / 2);
+        imageView.setLayoutY(10);
         lobbyPane.getChildren().add(imageView);
 
-        // Create three buttons in the middle
-        Button button1 = new Button("Option 1");
-        Button button2 = new Button("Option 2");
-        Button button3 = new Button("Option 3");
+        addButtonsToPane(lobbyPane, jfxPanel, frame);
 
-        // Set positions of buttons with absolute positioning
-        button1.setLayoutX(400); // Horizontal position
-        button1.setLayoutY(250); // Vertical position
-
-        button2.setLayoutX(400); // Horizontal position
-        button2.setLayoutY(300); // Vertical position
-
-        button3.setLayoutX(400); // Horizontal position
-        button3.setLayoutY(350); // Vertical position
-
-        // Add buttons to the pane
-        lobbyPane.getChildren().addAll(button1, button2, button3);
-
-        // Create and set the scene for the lobby
-        Scene lobbyScene = new Scene(lobbyPane, Color.BLACK); // Lobby background color
-        jfxPanel.setScene(lobbyScene);
-
-        // Fade-in the lobby video after fading to black
-        Platform.runLater(() -> {
-            FadeTransition fadeIn = new FadeTransition(Duration.millis(FADE_DURATION), lobbyPane);
-            fadeIn.setFromValue(0.0);
-            fadeIn.setToValue(1.0);
-            fadeIn.play();
-        });
+        jfxPanel.setScene(new Scene(lobbyPane, Color.BLACK));
     }
+
+    private static void showSelectCategoryScreen(JFXPanel jfxPanel, JFrame frame, Pane lobbyPane) {
+        MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
+        if (lobbyMediaPlayer == null) return;
+
+        MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
+        Pane categoryPane = new Pane(lobbyMediaView);
+
+        addCategoryButtonsToPane(categoryPane, jfxPanel, frame);
+
+        Scene categoryScene = new Scene(categoryPane, 1000, 600);
+        
+        jfxPanel.setScene(categoryScene);
+    }
+
+    private static Button createImageButton(Image image, double x, double y, double width, double height) {
+        return createImageButton(image, null, null, x, y, width, height, null);
+    }
+
+    private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, EventHandler<ActionEvent> action) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        button.setGraphic(imageView);
+        button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        button.setLayoutX(x);
+        button.setLayoutY(y);
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        if (hoverImage != null && clickImage != null) {
+            button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
+            button.setOnMouseExited(event -> setButtonGraphic(button, image, width, height));
+            button.setOnMousePressed(event -> setButtonGraphic(button, clickImage, width, height));
+            button.setOnMouseReleased(event -> setButtonGraphic(button, image, width, height));
+        }
+
+        if (action != null) {
+            button.setOnAction(action);
+        }
+
+        return button;
+    }
+
+    private static void setButtonGraphic(Button button, Image image, double width, double height) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        button.setGraphic(imageView);
+    }
+ 
+    private static void addButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
+        Image imgStart = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start.png");
+        Image imgStartHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start-hover.png");
+        Image imgStartClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start-click.png");
+        Image imgHowTo = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to.png");
+        Image imgHowToHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to-hover.png");
+        Image imgHowToClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to-click.png");
+        Image imgCredits = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits.png");
+        Image imgCreditsHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits-hover.png");
+        Image imgCreditsClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits-click.png");
+        Image imgExit = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit.png");
+        Image imgExitHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit-hover.png");
+        Image imgExitclick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit-click.png");
+        Image imgMusic = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/music-on.png");
+        Image imgSFX = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/sfx-on.png");
+
+        Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60, event -> showSelectCategoryScreen(jfxPanel, frame, pane));
+        Button buttonHowTo = createImageButton(imgHowTo, imgHowToHover, imgHowToClick, 350, 280, 250, 60, event -> JOptionPane.showMessageDialog(null, "How to play:"));
+        Button buttonCredits = createImageButton(imgCredits, imgCreditsHover, imgCreditsClick, 350, 340, 250, 60, event -> JOptionPane.showMessageDialog(null, "Credits:"));
+        Button buttonExit = createImageButton(imgExit, imgExitHover, imgExitclick, 350, 400, 250, 60, event -> System.exit(0));
+        Button buttonMusic = createImageButton(imgMusic, 870, 500, 30, 30);
+        Button buttonSFX = createImageButton(imgSFX, 920, 500, 30, 30);
+
+        pane.getChildren().addAll(buttonStart, buttonHowTo, buttonCredits, buttonExit, buttonMusic, buttonSFX);
+    }
+
+    private static void addCategoryButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
+        Image imgEasy = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy.png");
+        Image imgEasyHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy-hover.png");
+        Image imgEasyClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy-click.png");
+
+        Image imgAverage = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg.png");
+        Image imgAverageHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg-hover.png");
+        Image imgAverageClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg-click.png");
+
+        Image imgDifficult = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff.png");
+        Image imgDifficultHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff-hover.png");
+        Image imgDifficultClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff-click.png");
+
+        Image imgReturn = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return.png");
+        Image imgReturnHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return-hover.png");
+        Image imgReturnClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return-click.png");
+
+
+        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, 350, 220, 250, 60,   event -> showHangmanScreen());
+        Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, 350, 300, 250, 60,   event -> showHangmanScreen());
+        Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, 350, 380, 250, 60, event -> showHangmanScreen());
+        Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(jfxPanel, frame));
+
+        pane.getChildren().addAll(buttonEasy, buttonAverage, buttonDifficult, buttonReturn);
+    }
+
+    public static void showHangmanScreen() {
+        Hangman hangman = new Hangman();
+        hangman.setVisible(true);
+    }    
 }
