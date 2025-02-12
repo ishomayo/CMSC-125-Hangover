@@ -13,6 +13,8 @@ import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
+import javafx.animation.FadeTransition;
+import javafx.scene.Node;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +24,14 @@ public class GUI {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GUI::createGUI);
     }
+
+    private static void applyFadeTransition(Node node, double duration, EventHandler<ActionEvent> onFinished) {
+    FadeTransition fadeTransition = new FadeTransition(Duration.seconds(duration), node);
+    fadeTransition.setFromValue(1.0);
+    fadeTransition.setToValue(0.0);
+    fadeTransition.setOnFinished(onFinished);
+    fadeTransition.play();
+}
 
     private static void createGUI() {   
         JFrame frame = new JFrame();
@@ -63,7 +73,7 @@ public class GUI {
         MediaPlayer splashMediaPlayer = createMediaPlayer(Constants.SPLASH_VIDEO_PATH, true, 1);
         if (splashMediaPlayer == null) return;
 
-        splashMediaPlayer.setStopTime(Duration.seconds(1)); // Set splash screen duration to 5 seconds
+        splashMediaPlayer.setStopTime(Duration.seconds(4)); // Set splash screen duration to 5 seconds
 
         MediaView splashMediaView = createMediaView(splashMediaPlayer, 1000, 600);
         StackPane splashPane = new StackPane(splashMediaView);
@@ -143,20 +153,20 @@ public class GUI {
     }
  
     private static void addButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
-        Image imgStart = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start.png");
-        Image imgStartHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start-hover.png");
-        Image imgStartClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/start-click.png");
-        Image imgHowTo = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to.png");
-        Image imgHowToHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to-hover.png");
-        Image imgHowToClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/how_to-click.png");
-        Image imgCredits = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits.png");
-        Image imgCreditsHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits-hover.png");
-        Image imgCreditsClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/credits-click.png");
-        Image imgExit = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit.png");
-        Image imgExitHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit-hover.png");
-        Image imgExitclick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/exit-click.png");
-        Image imgMusic = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/music-on.png");
-        Image imgSFX = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/sfx-on.png");
+        Image imgStart = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start.png");
+        Image imgStartHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start-hover.png");
+        Image imgStartClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start-click.png");
+        Image imgHowTo = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to.png");
+        Image imgHowToHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to-hover.png");
+        Image imgHowToClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to-click.png");
+        Image imgCredits = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits.png");
+        Image imgCreditsHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits-hover.png");
+        Image imgCreditsClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits-click.png");
+        Image imgExit = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit.png");
+        Image imgExitHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-hover.png");
+        Image imgExitclick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-click.png");
+        Image imgMusic = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-on.png");
+        Image imgSFX = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-on.png");
 
         Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60, event -> showSelectCategoryScreen(jfxPanel, frame, pane));
         Button buttonHowTo = createImageButton(imgHowTo, imgHowToHover, imgHowToClick, 350, 280, 250, 60, event -> JOptionPane.showMessageDialog(null, "How to play:"));
@@ -169,33 +179,48 @@ public class GUI {
     }
 
     private static void addCategoryButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
-        Image imgEasy = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy.png");
-        Image imgEasyHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy-hover.png");
-        Image imgEasyClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/easy-click.png");
+        Image imgEasy = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy.png");
+        Image imgEasyHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy-hover.png");
+        Image imgEasyClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy-click.png");
 
-        Image imgAverage = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg.png");
-        Image imgAverageHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg-hover.png");
-        Image imgAverageClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/avg-click.png");
+        Image imgAverage = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg.png");
+        Image imgAverageHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg-hover.png");
+        Image imgAverageClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg-click.png");
 
-        Image imgDifficult = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff.png");
-        Image imgDifficultHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff-hover.png");
-        Image imgDifficultClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/diff-click.png");
+        Image imgDifficult = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff.png");
+        Image imgDifficultHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-hover.png");
+        Image imgDifficultClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-click.png");
 
-        Image imgReturn = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return.png");
-        Image imgReturnHover = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return-hover.png");
-        Image imgReturnClick = new Image("file:/D:/Documents/CMSC-125-Hangover-main/Hangover/resources/return-click.png");
+        Image imgReturn = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return.png");
+        Image imgReturnHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-hover.png");
+        Image imgReturnClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-click.png");
 
 
-        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, 350, 220, 250, 60,   event -> showHangmanScreen());
-        Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, 350, 300, 250, 60,   event -> showHangmanScreen());
-        Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, 350, 380, 250, 60, event -> showHangmanScreen());
+        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, 350, 220, 250, 60,   event -> {
+            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
+        });
+        Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, 350, 300, 250, 60,   event -> {
+            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
+        });
+        Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, 350, 380, 250, 60, event -> {
+            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
+        });
         Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(jfxPanel, frame));
 
         pane.getChildren().addAll(buttonEasy, buttonAverage, buttonDifficult, buttonReturn);
     }
 
-    public static void showHangmanScreen() {
-        Hangman hangman = new Hangman();
-        hangman.setVisible(true);
-    }    
+    public static void showHangmanScreen(JFrame frame) {
+        // Dispose of the current JFrame and create a new one for the Hangman game
+        frame.dispose();  // Close the current JavaFX frame
+        
+        SwingUtilities.invokeLater(() -> {
+            Hangman hangman = new Hangman(); 
+            hangman.setUndecorated(true);
+            hangman.setSize(1000, 600); 
+            hangman.setLocationRelativeTo(null);
+            hangman.setVisible(true);
+        });
+    }
+     
 }
