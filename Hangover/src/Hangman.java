@@ -293,6 +293,7 @@ public class Hangman extends JFrame implements ActionListener {
         Image img = originalIcon.getImage();
         Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Resize to fit
         return new ImageIcon(scaledImg);
+        
     }
 
     public static void main(String[] args) {
