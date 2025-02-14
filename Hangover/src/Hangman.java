@@ -1,179 +1,278 @@
-import javax.swing.*;
+import javafx.application.Application;
+// import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+// import javafx.scene.text.Font;
+import javafx.stage.Stage;
+// import javafx.stage.StageStyle;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
-public class Hangman extends JFrame implements ActionListener {
+// import javax.swing.JLabel;
+import javafx.scene.control.TextField;
+
+public class Hangman extends Application {
     private int incorrectGuesses;
     private int score = 0;
     private String[] wordChallenge;
-    private final WordDB wordDB;
-    private JLabel hangmanImage, categoryLabel, hiddenWordLabel, resultLabel, backgroundImage;
-    private JTextField inputField;
-    private JButton enterButton;
-    private HashMap<Character, JLabel> letterLabels;
-    private static final String BASE_PATH = "resources/letters/";
+    private final WordDB wordDB = new WordDB();
+    private Label hangmanImage, categoryLabel, hiddenWordLabel, scoreLabel, timerLabel;
+    private HashMap<Character, Label> letterLabels;
+    private javafx.scene.control.TextField inputField;
+    private Button enterButton;
+    private TextField secondsLeft, scoreField;
+    private int secondsT = 0;
 
-    public Hangman() {
-        super("Hangman Game");
-        setSize(CommonConstants.FRAME_SIZE);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(null);
-        setResizable(false);
-        getContentPane().setBackground(CommonConstants.BACKGROUND_COLOR);
-        setUndecorated(true);
+    javafx.animation.Timeline timer1 = new javafx.animation.Timeline(
+        new javafx.animation.KeyFrame(
+            javafx.util.Duration.seconds(1),
+            event -> {
+                secondsT++;
+                secondsLeft.setText(String.valueOf(secondsT));
+            }
+        )
+    );
 
-        wordDB = new WordDB();
-        wordChallenge = wordDB.loadChallenge();
-        letterLabels = new HashMap<>();
-        addGuiComponents();
-    }
-
-    private void addGuiComponents() {
-        // Hangman image
-        hangmanImage = CustomTools.loadImage(CommonConstants.IMAGE_PATH);
-        hangmanImage.setBounds(650, 10, 300, 600);
-        getContentPane().add(hangmanImage);
-
-        scaleHangmanImage(incorrectGuesses);
-
-        // Category label
-        categoryLabel = new JLabel("Category: " + wordChallenge[0]);
-        categoryLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        categoryLabel.setForeground(Color.WHITE);
-        categoryLabel.setBounds(50, 40, 400, 30);
-        getContentPane().add(categoryLabel);
-
-        // Hidden word label
-        hiddenWordLabel = new JLabel(CustomTools.hideWords(wordChallenge[1]));
-        hiddenWordLabel.setFont(new Font("Arial", Font.BOLD, 40));
-        hiddenWordLabel.setForeground(Color.WHITE);
-        hiddenWordLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        hiddenWordLabel.setBounds(50, 100, 500, 50);
-        getContentPane().add(hiddenWordLabel);
-
-        // Letter panel for displaying letter icons A - I
-        JPanel letterPanelA_I = new JPanel(new GridLayout(1, 10, 0, 0));
-        letterPanelA_I.setBounds(50, 0, 500, 500);
-        letterPanelA_I.setOpaque(false);
-
-        // Loop through each letter from A to I
-        for (char c = 'A'; c <= 'J'; c++) {
-            // Load and scale the image
-            ImageIcon originalIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
-
-            // Scale the image to fit the JLabel size
-            Image img = originalIcon.getImage();
-            Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize to fit
-            ImageIcon scaledIcon = new ImageIcon(scaledImg);
-
-            // Create a JLabel with the scaled icon
-            JLabel letterLabel = new JLabel(scaledIcon);
-            letterLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            // Store the label in the map
-            letterLabels.put(c, letterLabel);
-
-            // Add the label to the panel
-            letterPanelA_I.add(letterLabel);
-        }
-        getContentPane().add(letterPanelA_I);
-
-        // Letter panel for displaying letter icons J - S
-        JPanel letterPanelJ_S = new JPanel(new GridLayout(1, 10, 0, 0));
-        letterPanelJ_S.setBounds(50, 40, 500, 500);
-        letterPanelJ_S.setOpaque(false);
-
-        // Loop through each letter from J to S
-        for (char c = 'K'; c <= 'T'; c++) {
-            // Load and scale the image
-            ImageIcon originalIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
-
-            // Scale the image to fit the JLabel size
-            Image img = originalIcon.getImage();
-            Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize to fit
-            ImageIcon scaledIcon = new ImageIcon(scaledImg);
-
-            // Create a JLabel with the scaled icon
-            JLabel letterLabel = new JLabel(scaledIcon);
-            letterLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            // Store the label in the map
-            letterLabels.put(c, letterLabel);
-
-            // Add the label to the panel
-            letterPanelJ_S.add(letterLabel);
-        }
-        getContentPane().add(letterPanelJ_S);
-
-        // Letter panel for displaying letter icons T - Z
-        JPanel letterPanelT_Z = new JPanel(new GridLayout(1, 10, 0, 0));
-        letterPanelT_Z.setBounds(50, 80, 500, 500);
-        letterPanelT_Z.setOpaque(false);
-
-        // Loop through each letter from T to Z
-        for (char c = 'U'; c <= 'Z'; c++) {
-            // Load and scale the image
-            ImageIcon originalIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
-
-            // Scale the image to fit the JLabel size
-            Image img = originalIcon.getImage();
-            Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Resize to fit
-            ImageIcon scaledIcon = new ImageIcon(scaledImg);
-
-            // Create a JLabel with the scaled icon
-            JLabel letterLabel = new JLabel(scaledIcon);
-            letterLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-            // Store the label in the map
-            letterLabels.put(c, letterLabel);
-
-            // Add the label to the panel
-            letterPanelT_Z.add(letterLabel);
-        }
-        getContentPane().add(letterPanelT_Z);
-
-        // Input field for letter guesses
-        inputField = new JTextField();
-        inputField.setFont(new Font("Arial", Font.PLAIN, 24));
-        inputField.setBounds(250, 400, 50, 40);
-        
-        inputField.addKeyListener(new KeyAdapter() {
-            public void keyTyped(KeyEvent e){
-                char c = e.getKeyChar();
-                if (!Character.isLetter(c) || inputField.getText().length() >= 1){
-                    e.consume();
-                }
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Hangman Game");
+        primaryStage.setWidth(CommonConstants.FRAME_SIZE.width);
+        primaryStage.setHeight(CommonConstants.FRAME_SIZE.height);
+        primaryStage.setResizable(false);
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.setOnCloseRequest(event -> {
+            // Load the Lobby Screen when the window is closed
+            try {
+                new GUI().start(new Stage());
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 
-        getContentPane().add(inputField);
-        
-        ImageIcon defaultIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\default_icon.png");
-        ImageIcon hoverIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\hover_icon.png");
-        ImageIcon clickedIcon = new ImageIcon("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\clicked_icon.png");
+        Pane root = new Pane();
+        Scene scene = new Scene(root);
 
-        // Enter button with different state icons
-        enterButton = new JButton(defaultIcon);
-        enterButton.setBounds(350, 400, 100, 40);
-        enterButton.setRolloverIcon(hoverIcon);  // Image when hovered
-        enterButton.setPressedIcon(clickedIcon); // Image when clicked
-        enterButton.setFocusPainted(false);      // Remove focus border
-        enterButton.setBorderPainted(false);     // Remove border
-        enterButton.setContentAreaFilled(false); // Make the background transparent
-        enterButton.addActionListener(this);
-        getContentPane().add(enterButton);
+        Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\InGame_Screen.jpg");
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        root.setBackground(new Background(background));
+
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        wordChallenge = wordDB.loadChallenge();
+        letterLabels = new HashMap<>();
+        addGuiComponents(root);
     }
     
+    private void addGuiComponents(Pane root) {
+        // Hangman image
+        hangmanImage = new Label();
+        ImageView hangmanImageView = new ImageView(new Image(CommonConstants.IMAGE_PATH));
+        hangmanImageView.setFitWidth(300); // Set the desired width
+        hangmanImageView.setFitHeight(600); // Set the desired height
+        hangmanImageView.setPreserveRatio(true); // Preserve the aspect ratio
+        hangmanImage.setGraphic(hangmanImageView);
+        hangmanImage.setLayoutX(200); // Set the desired X position
+        hangmanImage.setLayoutY(10);  // Set the desired Y position
+        root.getChildren().add(hangmanImage);
+
+        scaleHangmanImage(incorrectGuesses);
+
+        // Score label
+        scoreLabel = new Label("Score: ");
+        scoreLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        scoreLabel.setTextFill(Color.BLACK);
+        scoreLabel.setLayoutX(500);
+        scoreLabel.setLayoutY(70);
+        scoreLabel.setPrefWidth(200);
+        scoreLabel.setPrefHeight(30);
+        root.getChildren().add(scoreLabel);
+
+        scoreField = new TextField();
+        scoreField.setText(String.valueOf(score));
+        scoreField.setEditable(false);
+        scoreField.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
+        scoreField.setLayoutX(630);
+        scoreField.setLayoutY(70);
+        scoreField.setPrefWidth(60);
+        scoreField.setPrefHeight(30);
+        root.getChildren().add(scoreField);
+
+
+
+        timer1.setCycleCount(javafx.animation.Animation.INDEFINITE);
+
+        // Timer label
+        timer1.play();
+        timerLabel = new Label("Time Left: ");
+        timerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        timerLabel.setTextFill(Color.BLACK);
+        timerLabel.setLayoutX(500);
+        timerLabel.setLayoutY(40);
+        timerLabel.setPrefWidth(200);
+        timerLabel.setPrefHeight(30);
+        root.getChildren().add(timerLabel);
+
+        secondsLeft = new TextField();
+        secondsLeft.setEditable(false);
+        secondsLeft.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
+        secondsLeft.setLayoutX(630);
+        secondsLeft.setLayoutY(40);
+        secondsLeft.setPrefWidth(60);
+        secondsLeft.setPrefHeight(30);
+        root.getChildren().add(secondsLeft);
+
+        // Category label
+        categoryLabel = new Label("Category: " + wordChallenge[0]);
+        categoryLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        categoryLabel.setTextFill(Color.BLACK);
+        categoryLabel.setLayoutX(60);
+        categoryLabel.setLayoutY(50);
+        categoryLabel.setPrefWidth(400);
+        categoryLabel.setPrefHeight(30);
+        root.getChildren().add(categoryLabel);
+
+        // Hidden word label
+        hiddenWordLabel = new Label(CustomTools.hideWords(wordChallenge[1]));
+        hiddenWordLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold;");
+        hiddenWordLabel.setTextFill(Color.BLACK);
+        hiddenWordLabel.setLayoutX(200);
+        hiddenWordLabel.setLayoutY(100);
+        hiddenWordLabel.setPrefWidth(500);
+        hiddenWordLabel.setPrefHeight(50);
+        root.getChildren().add(hiddenWordLabel);
+
+        // Letter panel for displaying letter icons A - I
+        GridPane letterPanelA_I = new GridPane();
+        letterPanelA_I.setLayoutX(50);
+        letterPanelA_I.setLayoutY(200);
+        letterPanelA_I.setHgap(5);
+        letterPanelA_I.setVgap(5);
+        letterPanelA_I.setPrefWidth(400);
+        letterPanelA_I.setPrefHeight(400);
+        letterPanelA_I.setStyle("-fx-background-color: transparent;");
+
+        // Loop through each letter from A to I
+        for (char c = 'A'; c <= 'J'; c++) {
+            Label letterLabel = createLetterLabel(c);
+            letterPanelA_I.add(letterLabel, c - 'A', 0);
+        }
+        root.getChildren().add(letterPanelA_I);
+
+        // Letter panel for displaying letter icons J - S
+        GridPane letterPanelJ_S = new GridPane();
+        letterPanelJ_S.setLayoutX(50);
+        letterPanelJ_S.setLayoutY(250);
+        letterPanelJ_S.setHgap(5);
+        letterPanelJ_S.setVgap(5);
+        letterPanelJ_S.setPrefWidth(400);
+        letterPanelJ_S.setPrefHeight(400);
+        letterPanelJ_S.setStyle("-fx-background-color: transparent;");
+
+        // Loop through each letter from J to S
+        for (char c = 'K'; c <= 'T'; c++) {
+            Label letterLabel = createLetterLabel(c);
+            letterPanelJ_S.add(letterLabel, c - 'K', 0);
+        }
+        root.getChildren().add(letterPanelJ_S);
+
+        // Letter panel for displaying letter icons T - Z
+        GridPane letterPanelT_Z = new GridPane();
+        letterPanelT_Z.setLayoutX(50);
+        letterPanelT_Z.setLayoutY(300);
+        letterPanelT_Z.setHgap(10);
+        letterPanelT_Z.setVgap(10);
+        letterPanelT_Z.setPrefWidth(400);
+        letterPanelT_Z.setPrefHeight(400);
+        letterPanelT_Z.setStyle("-fx-background-color: transparent;");
+
+        // Loop through each letter from T to Z
+        for (char c = 'U'; c <= 'Z'; c++) {
+            Label letterLabel = createLetterLabel(c);
+            letterPanelT_Z.add(letterLabel, c - 'U', 0);
+        }
+        root.getChildren().add(letterPanelT_Z);
+
+        // Input field for letter guesses
+        inputField = new javafx.scene.control.TextField();
+        inputField.setStyle("-fx-font-size: 24px; -fx-alignment: center; ");
+        inputField.setLayoutX(250);
+        inputField.setLayoutY(400);
+        inputField.setPrefWidth(50);
+        inputField.setPrefHeight(50);
+        inputField.setOnKeyTyped(event -> {
+            char c = event.getCharacter().charAt(0);
+            if (!Character.isLetter(c) || inputField.getText().length() >= 1) {
+                event.consume();
+            }
+        });
+        root.getChildren().add(inputField);
+
+        Image defaultIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\default_icon.png");
+        Image hoverIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\hover_icon.png");
+        Image clickedIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\clicked_icon.png");
+
+        // Enter button with different state icons
+
+        enterButton = new Button();
+        ImageView imageViewDefault = new ImageView(defaultIcon);
+        ImageView imageViewHover = new ImageView(hoverIcon);
+        ImageView imageViewClicked = new ImageView(clickedIcon);
+
+        enterButton.setPrefHeight(30);  // Set height of the button
+
+        // Set the image to adjust its aspect ratio while maintaining the height
+        imageViewDefault.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewDefault.setPreserveRatio(true); // Keep the aspect ratio of the image
+
+        imageViewHover.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewHover.setPreserveRatio(true);
+
+        imageViewClicked.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewClicked.setPreserveRatio(true);
+
+        enterButton.setGraphic(imageViewDefault);
+        enterButton.setLayoutX(300);
+        enterButton.setLayoutY(405);
+        enterButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        enterButton.setOnMouseEntered(event -> enterButton.setGraphic(imageViewHover));
+        enterButton.setOnMouseExited(event -> enterButton.setGraphic(imageViewDefault));
+        enterButton.setOnMousePressed(event -> enterButton.setGraphic(imageViewClicked));
+        enterButton.setOnMouseReleased(event -> enterButton.setGraphic(imageViewDefault));
+        enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
+        root.getChildren().add(enterButton);
+    }
+
+    private Label createLetterLabel(char c) {
+        Image originalImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
+
+        // Scale the image to fit the Label size
+        ImageView imageView = new ImageView(originalImage);
+        imageView.setFitWidth(50);
+        imageView.setFitHeight(50);
+        imageView.setPreserveRatio(true);
+
+        Label letterLabel = new Label();
+        letterLabel.setGraphic(imageView);
+        letterLabels.put(c, letterLabel);
+        return letterLabel;
+    }
+
     private void scaleHangmanImage(int incorrectGuesses) {
         // Get the size of the container (window size)
-        int panelWidth = getWidth() - 50;  // Add padding if necessary
-        int panelHeight = getHeight() - 100; // Adjust to leave space for other components
+        int panelWidth = (int) (hangmanImage.getParent().getLayoutBounds().getWidth() - 150);  // Add padding if necessary
+        int panelHeight = (int) (hangmanImage.getParent().getLayoutBounds().getHeight() - 200); // Adjust to leave space for other components
 
         // Define max width and height constraints
         int maxWidth = 500;
@@ -184,15 +283,11 @@ public class Hangman extends JFrame implements ActionListener {
         if (panelHeight > maxHeight) panelHeight = maxHeight;
 
         // Get the image corresponding to the current incorrect guess
-        String imagePath = "D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources\\" + (incorrectGuesses + 1) + ".png";
-        ImageIcon originalIcon = new ImageIcon(imagePath);
-
-        // Get the original width and height of the image
-        int originalWidth = originalIcon.getIconWidth();
-        int originalHeight = originalIcon.getIconHeight();
+        String imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources\\" + (incorrectGuesses + 1) + ".png";
+        Image originalImage = new Image(imagePath);
 
         // Calculate scaling factor to maintain aspect ratio
-        double aspectRatio = (double) originalWidth / originalHeight;
+        double aspectRatio = originalImage.getWidth() / originalImage.getHeight();
 
         if (panelWidth / aspectRatio <= panelHeight) {
             // Scale based on width
@@ -203,62 +298,77 @@ public class Hangman extends JFrame implements ActionListener {
         }
 
         // Scale the image to fit the panel while maintaining aspect ratio
-        Image img = originalIcon.getImage();
-        Image scaledImg = img.getScaledInstance(panelWidth, panelHeight, Image.SCALE_SMOOTH);
-        ImageIcon scaledIcon = new ImageIcon(scaledImg);
+        Image scaledImage = new Image(imagePath, panelWidth, panelHeight, true, true);
 
-        // Set the scaled image to the JLabel
-        hangmanImage.setIcon(scaledIcon);
+        // Set the scaled image to the Label
+        hangmanImage.setGraphic(new ImageView(scaledImage));
+        hangmanImage.setLayoutX(690);
+        hangmanImage.setLayoutY(150);
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == enterButton) {
-            String input = inputField.getText().toUpperCase();
-            if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'Z') {
-                char guessedLetter = input.charAt(0);
-                inputField.setText("");  // Clear the input field
+    private void handleEnterButtonAction(Button enterButton) {
+        String input = inputField.getText().toUpperCase();
+        if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'Z') {
+            char guessedLetter = input.charAt(0);
+            inputField.setText("");  // Clear the input field
 
-                // Load the image based on the correct or incorrect state
-                String imagePath = "";
-                ImageIcon originalIcon;
+            // Load the image based on the correct or incorrect state
+            String imagePath = "";
 
-                if (wordChallenge[1].contains(String.valueOf(guessedLetter))) {
-                    // Correct guess
-                    imagePath = "D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_correct.png";
+            if (wordChallenge[1].contains(String.valueOf(guessedLetter))) {
+                // Correct guess
+                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_correct.png";
+            } else {
+                // Incorrect guess
+                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_incorrect.png";
+                incorrectGuesses++;
+                if(score > 4){
+                    score = score - 5;
                 } else {
-                    // Incorrect guess
-                    imagePath = "D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_incorrect.png";
-                    incorrectGuesses++;
-
-                    // Call the updated scale method for hangman image
-                    scaleHangmanImage(incorrectGuesses);  // Scale based on number of incorrect guesses
-
-                    if (incorrectGuesses >= 6) {
-                        JOptionPane.showMessageDialog(this, "Game Over! The word was: " + wordChallenge[1]);
-                        resetGame();
-                        return;  // Exit early to avoid further processing after game over
-                    }
+                    score = 0;
                 }
 
-                // Load and scale the icon
-                originalIcon = new ImageIcon(imagePath);
-                Image img = originalIcon.getImage();
-                Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // Scale to fit
-                ImageIcon scaledIcon = new ImageIcon(scaledImg);
+                // Call the updated scale method for hangman image
+                scaleHangmanImage(incorrectGuesses);  // Scale based on number of incorrect guesses
 
-                // Set the scaled icon to the corresponding letter
-                letterLabels.get(guessedLetter).setIcon(scaledIcon);
-                updateHiddenWord(guessedLetter);
-
-                if (!hiddenWordLabel.getText().contains("*")) {
-                    JOptionPane.showMessageDialog(this, "You got it right!");
-                    resetGame();
+                if (incorrectGuesses >= 6) {
+                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                    alert.setTitle("Game Over");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Game Over! The word was: " + wordChallenge[1]);
+                    alert.showAndWait();
+                    resetGame(enterButton);
+                    return;  // Exit early to avoid further processing after game over
                 }
+            }
+
+            // Load and scale the icon
+            // Image originalImage = new Image(imagePath);
+            Image scaledImage = new Image(imagePath, 50, 50, true, true);
+
+            // Set the scaled icon to the corresponding letter
+            letterLabels.get(guessedLetter).setGraphic(new ImageView(scaledImage));
+            updateHiddenWord(guessedLetter);
+
+            if (!hiddenWordLabel.getText().contains("*")) {
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+                alert.setTitle("Congratulations");
+                alert.setHeaderText(null);
+                alert.setContentText("You got it right!");
+                alert.showAndWait();
+
+                timer1.stop();
+                if(secondsT == 1){
+                    score += 1;
+                } else{
+                    score = score + (60-secondsT);
+                }
+                scoreField.setText(String.valueOf(score));
+                resetGame(enterButton);
             }
         }
     }
-    
+
     private void updateHiddenWord(char guessedLetter) {
         char[] hiddenWord = hiddenWordLabel.getText().toCharArray();
         for (int i = 0; i < wordChallenge[1].length(); i++) {
@@ -269,34 +379,32 @@ public class Hangman extends JFrame implements ActionListener {
         hiddenWordLabel.setText(String.valueOf(hiddenWord));
     }
 
-    private void resetGame() {
-
+    private void resetGame(Button enterButton) {
         // Reload the word challenge
         wordChallenge = wordDB.loadChallenge();
         incorrectGuesses = 0;
-    
+
+        secondsT = 0;
+        timer1.playFromStart();
+
         scaleHangmanImage(incorrectGuesses); // Apply scaling to the image
-    
+
         // Reset the hidden word
         hiddenWordLabel.setText(CustomTools.hideWords(wordChallenge[1]));
-    
+
         // Reset letter images (back to default)
-        letterLabels.forEach((k, v) -> v.setIcon(scaleImage("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + k + "_default.png", 50, 50)));
-    
+        letterLabels.forEach((k, v) -> {
+            Label newLabel = createLetterLabel(k);
+            v.setGraphic(newLabel.getGraphic());
+        });
+
+        enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
+
         // Optionally, clear the input field
         inputField.setText("");
     }
-    
-    // Helper method to scale an image to a specific width and height
-    private ImageIcon scaleImage(String imagePath, int width, int height) {
-        ImageIcon originalIcon = new ImageIcon(imagePath);
-        Image img = originalIcon.getImage();
-        Image scaledImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH); // Resize to fit
-        return new ImageIcon(scaledImg);
-        
-    }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Hangman::new);
+        launch(args);
     }
 }

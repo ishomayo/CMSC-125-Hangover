@@ -1,3 +1,5 @@
+// import javafx.animation.FadeTransition;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
@@ -10,45 +12,39 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+// import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
-import javafx.animation.FadeTransition;
-import javafx.scene.Node;
 
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 
-public class GUI {
+// import javax.swing.JFrame;
+// import javax.swing.SwingUtilities;
+
+public class GUI extends Application {
+
+    // private MediaPlayer soundmain = createMediaPlayer("D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Music.mp3", true, MediaPlayer.INDEFINITE);
+    
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(GUI::createGUI);
+        launch(args);
     }
 
-    private static void applyFadeTransition(Node node, double duration, EventHandler<ActionEvent> onFinished) {
-    FadeTransition fadeTransition = new FadeTransition(Duration.seconds(duration), node);
-    fadeTransition.setFromValue(1.0);
-    fadeTransition.setToValue(0.0);
-    fadeTransition.setOnFinished(onFinished);
-    fadeTransition.play();
-}
-
-    private static void createGUI() {   
-        JFrame frame = new JFrame();
-        frame.setUndecorated(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(Constants.FRAME_SIZE.width, Constants.FRAME_SIZE.height);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setLayout(new BorderLayout());
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Hangman Game");
+        primaryStage.setWidth(Constants.FRAME_SIZE.width);
+        primaryStage.setHeight(Constants.FRAME_SIZE.height);
+        primaryStage.setResizable(false);
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.setOnCloseRequest(event -> Platform.exit());
 
         JFXPanel jfxPanel = new JFXPanel();
-        frame.add(jfxPanel, BorderLayout.CENTER);
-
-        Platform.runLater(() -> initFX(jfxPanel, frame));
-        frame.setVisible(true);
+        Platform.runLater(() -> initFX(jfxPanel, primaryStage));
     }
 
+    // Method to create a MediaPlayer
     private static MediaPlayer createMediaPlayer(String filePath, boolean autoPlay, int cycleCount) {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -61,6 +57,7 @@ public class GUI {
         return mediaPlayer;
     }
 
+    // Method to create a MediaView
     private static MediaView createMediaView(MediaPlayer mediaPlayer, double width, double height) {
         MediaView mediaView = new MediaView(mediaPlayer);
         mediaView.setFitWidth(width);
@@ -69,56 +66,114 @@ public class GUI {
         return mediaView;
     }
 
-    private static void initFX(JFXPanel jfxPanel, JFrame frame) {
+    // Method to initialize JavaFX components
+    private static void initFX(JFXPanel jfxPanel, Stage primaryStage) {
         MediaPlayer splashMediaPlayer = createMediaPlayer(Constants.SPLASH_VIDEO_PATH, true, 1);
         if (splashMediaPlayer == null) return;
 
-        splashMediaPlayer.setStopTime(Duration.seconds(4)); // Set splash screen duration to 5 seconds
+        splashMediaPlayer.setStopTime(Duration.seconds(4)); // Set splash screen duration to 2 seconds
 
         MediaView splashMediaView = createMediaView(splashMediaPlayer, 1000, 600);
         StackPane splashPane = new StackPane(splashMediaView);
-        jfxPanel.setScene(new Scene(splashPane, Color.BLACK));
+        Scene splashScene = new Scene(splashPane, Color.BLACK);
+        primaryStage.setScene(splashScene);
+        primaryStage.show();
 
-        splashMediaPlayer.setOnEndOfMedia(() -> Platform.runLater(() -> fadeToLobby(jfxPanel, frame)));
+        splashMediaPlayer.setOnEndOfMedia(() -> Platform.runLater(() -> fadeToLobby(primaryStage)));
     }
 
-    private static void fadeToLobby(JFXPanel jfxPanel, JFrame frame) {
+    // Method to transition to the lobby screen
+    private static void fadeToLobby(Stage primaryStage) {
         MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
         if (lobbyMediaPlayer == null) return;
 
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
         Pane lobbyPane = new Pane(lobbyMediaView);
 
-        ImageView imageView = new ImageView(new Image("file:" + Constants.IMAGE_PATH));
-        imageView.setFitWidth(700);
-        imageView.setPreserveRatio(true);
-        imageView.setLayoutX((1000 - imageView.getFitWidth()) / 2);
-        imageView.setLayoutY(10);
+        ImageView imageView = createImageView("file:" + Constants.IMAGE_PATH, 700, 0, true, (1000 - 700) / 2, 10);
         lobbyPane.getChildren().add(imageView);
 
-        addButtonsToPane(lobbyPane, jfxPanel, frame);
+        addButtonsToPane(lobbyPane, primaryStage);
 
-        jfxPanel.setScene(new Scene(lobbyPane, Color.BLACK));
+        Scene lobbyScene = new Scene(lobbyPane, Color.BLACK);
+        primaryStage.setScene(lobbyScene);
     }
 
-    private static void showSelectCategoryScreen(JFXPanel jfxPanel, JFrame frame, Pane lobbyPane) {
+    // Method to show the category selection screen
+    private static void showSelectCategoryScreen(Stage primaryStage) {
         MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
         if (lobbyMediaPlayer == null) return;
 
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
-        Pane categoryPane = new Pane(lobbyMediaView);
+        
 
-        addCategoryButtonsToPane(categoryPane, jfxPanel, frame);
+        Image selectDifficultyImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/SelecctDifficulty.png");
+        ImageView imageView = new ImageView(selectDifficultyImage);
+    
+        // Ensure image fits without distortion
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(600); // Adjust width as needed
+        imageView.setLayoutX((1000-600)/2);
+        imageView.setLayoutY(50);
+
+        Pane categoryPane = new Pane(lobbyMediaView, imageView);
+
+        addCategoryButtonsToPane(categoryPane, primaryStage);
 
         Scene categoryScene = new Scene(categoryPane, 1000, 600);
-        
-        jfxPanel.setScene(categoryScene);
+        primaryStage.setScene(categoryScene);
     }
 
+    // Method to show the "How to Play" screen
+    private static void showHowToPlayScreen(Stage primaryStage) {
+        MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
+        if (lobbyMediaPlayer == null) return;
+
+        MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
+        Pane howToPane = new Pane(lobbyMediaView);
+
+        ImageView howToPlayImageView = createImageView(Constants.IMG_HOW_TO_PLAY, 800, 550, true, (1000 - 800) / 2, (600 - 550) / 2);
+        howToPane.getChildren().add(howToPlayImageView);
+
+        Image imgReturn = new Image(Constants.IMG_RETURN);
+        Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
+        Image imgReturnClick = new Image(Constants.IMG_RETURN_CLICK);
+
+        Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(primaryStage));
+        howToPane.getChildren().add(buttonReturn);
+
+        Scene howToScene = new Scene(howToPane, 1000, 600);
+        primaryStage.setScene(howToScene);
+    }
+
+    // Method to show the credits screen
+    private static void showCreditsScreen(Stage primaryStage) {
+        MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
+        if (lobbyMediaPlayer == null) return;
+
+        MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
+        Pane creditsPane = new Pane(lobbyMediaView);
+
+        ImageView creditsImageView = createImageView(Constants.IMG_CREDITS_SCREEN, 800, 550, true, (1000 - 800) / 2, (600 - 550) / 2);
+        creditsPane.getChildren().add(creditsImageView);
+
+        Image imgReturn = new Image(Constants.IMG_RETURN);
+        Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
+        Image imgReturnClick = new Image(Constants.IMG_RETURN_CLICK);
+
+        Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(primaryStage));
+        creditsPane.getChildren().add(buttonReturn);
+
+        Scene creditsScene = new Scene(creditsPane, 1000, 600);
+        primaryStage.setScene(creditsScene);
+    }
+
+    // Method to create an image button
     private static Button createImageButton(Image image, double x, double y, double width, double height) {
         return createImageButton(image, null, null, x, y, width, height, null);
     }
 
+    // Overloaded method to create an image button with hover and click effects
     private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, EventHandler<ActionEvent> action) {
         Button button = new Button();
         ImageView imageView = new ImageView(image);
@@ -145,82 +200,113 @@ public class GUI {
         return button;
     }
 
+    // Method to set the graphic of a button
     private static void setButtonGraphic(Button button, Image image, double width, double height) {
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(width);
         imageView.setFitHeight(height);
         button.setGraphic(imageView);
     }
- 
-    private static void addButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
-        Image imgStart = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start.png");
-        Image imgStartHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start-hover.png");
-        Image imgStartClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/start-click.png");
-        Image imgHowTo = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to.png");
-        Image imgHowToHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to-hover.png");
-        Image imgHowToClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/how_to-click.png");
-        Image imgCredits = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits.png");
-        Image imgCreditsHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits-hover.png");
-        Image imgCreditsClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/credits-click.png");
-        Image imgExit = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit.png");
-        Image imgExitHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-hover.png");
-        Image imgExitclick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-click.png");
-        Image imgMusic = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-on.png");
-        Image imgSFX = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-on.png");
 
-        Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60, event -> showSelectCategoryScreen(jfxPanel, frame, pane));
-        Button buttonHowTo = createImageButton(imgHowTo, imgHowToHover, imgHowToClick, 350, 280, 250, 60, event -> JOptionPane.showMessageDialog(null, "How to play:"));
-        Button buttonCredits = createImageButton(imgCredits, imgCreditsHover, imgCreditsClick, 350, 340, 250, 60, event -> JOptionPane.showMessageDialog(null, "Credits:"));
-        Button buttonExit = createImageButton(imgExit, imgExitHover, imgExitclick, 350, 400, 250, 60, event -> System.exit(0));
+    // Method to add buttons to the lobby pane
+    private static void addButtonsToPane(Pane pane, Stage primaryStage) {
+        Image imgStart = new Image(Constants.IMG_START);
+        Image imgStartHover = new Image(Constants.IMG_START_HOVER);
+        Image imgStartClick = new Image(Constants.IMG_START_CLICK);
+        Image imgHowTo = new Image(Constants.IMG_HOW_TO);
+        Image imgHowToHover = new Image(Constants.IMG_HOW_TO_HOVER);
+        Image imgHowToClick = new Image(Constants.IMG_HOW_TO_CLICK);
+        Image imgCredits = new Image(Constants.IMG_CREDITS);
+        Image imgCreditsHover = new Image(Constants.IMG_CREDITS_HOVER);
+        Image imgCreditsClick = new Image(Constants.IMG_CREDITS_CLICK);
+        Image imgExit = new Image(Constants.IMG_EXIT);
+        Image imgExitHover = new Image(Constants.IMG_EXIT_HOVER);
+        Image imgExitClick = new Image(Constants.IMG_EXIT_CLICK);
+        Image imgMusic = new Image(Constants.IMG_MUSIC);
+        Image imgSFX = new Image(Constants.IMG_SFX);
+
+        Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60, 
+            event -> showSelectCategoryScreen(primaryStage));
+        Button buttonHowTo = createImageButton(imgHowTo, imgHowToHover, imgHowToClick, 350, 280, 250, 60, 
+            event -> showHowToPlayScreen(primaryStage));
+        Button buttonCredits = createImageButton(imgCredits, imgCreditsHover, imgCreditsClick, 350, 340, 250, 60, 
+            event -> showCreditsScreen(primaryStage));
+        Button buttonExit = createImageButton(imgExit, imgExitHover, imgExitClick, 350, 400, 250, 60, 
+            event -> Platform.exit());
+            
         Button buttonMusic = createImageButton(imgMusic, 870, 500, 30, 30);
         Button buttonSFX = createImageButton(imgSFX, 920, 500, 30, 30);
 
         pane.getChildren().addAll(buttonStart, buttonHowTo, buttonCredits, buttonExit, buttonMusic, buttonSFX);
     }
 
-    private static void addCategoryButtonsToPane(Pane pane, JFXPanel jfxPanel, JFrame frame) {
-        Image imgEasy = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy.png");
-        Image imgEasyHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy-hover.png");
-        Image imgEasyClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy-click.png");
+    // Method to add category buttons to the pane
+    private static void addCategoryButtonsToPane(Pane pane, Stage primaryStage) {
+        Image imgEasy = new Image(Constants.IMG_EASY);
+        Image imgEasyHover = new Image(Constants.IMG_EASY_HOVER);
+        Image imgEasyClick = new Image(Constants.IMG_EASY_CLICK);
 
-        Image imgAverage = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg.png");
-        Image imgAverageHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg-hover.png");
-        Image imgAverageClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/avg-click.png");
+        Image imgAverage = new Image(Constants.IMG_AVERAGE);
+        Image imgAverageHover = new Image(Constants.IMG_AVERAGE_HOVER);
+        Image imgAverageClick = new Image(Constants.IMG_AVERAGE_CLICK);
 
-        Image imgDifficult = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff.png");
-        Image imgDifficultHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-hover.png");
-        Image imgDifficultClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-click.png");
+        Image imgDifficult = new Image(Constants.IMG_DIFFICULT);
+        Image imgDifficultHover = new Image(Constants.IMG_DIFFICULT_HOVER);
+        Image imgDifficultClick = new Image(Constants.IMG_DIFFICULT_CLICK);
 
-        Image imgReturn = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return.png");
-        Image imgReturnHover = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-hover.png");
-        Image imgReturnClick = new Image("file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-click.png");
+        Image imgReturn = new Image(Constants.IMG_RETURN);
+        Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
+        Image imgReturnClick = new Image(Constants.IMG_RETURN_CLICK);
 
-
-        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, 350, 220, 250, 60,   event -> {
-            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
-        });
-        Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, 350, 300, 250, 60,   event -> {
-            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
-        });
-        Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, 350, 380, 250, 60, event -> {
-            Platform.runLater(() -> showHangmanScreen(frame));  // Switch to the Hangman JFrame
-        });
-        Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(jfxPanel, frame));
+        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, (1000-250)/2, (600-240)/2, 250, 60, event -> showHangmanScreen(primaryStage));
+        Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, (1000-250)/2,  (600-60)/2, 250, 60, event -> showHangmanScreen(primaryStage));
+        Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, (1000-250)/2,  (600+120)/2, 250, 60, event -> showHangmanScreen(primaryStage));
+        Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30, event -> fadeToLobby(primaryStage));
 
         pane.getChildren().addAll(buttonEasy, buttonAverage, buttonDifficult, buttonReturn);
     }
 
-    public static void showHangmanScreen(JFrame frame) {
-        // Dispose of the current JFrame and create a new one for the Hangman game
-        frame.dispose();  // Close the current JavaFX frame
-        
-        SwingUtilities.invokeLater(() -> {
-            Hangman hangman = new Hangman(); 
-            hangman.setUndecorated(true);
-            hangman.setSize(1000, 600); 
-            hangman.setLocationRelativeTo(null);
-            hangman.setVisible(true);
-        });
+    // Method to create an ImageView
+    private static ImageView createImageView(String imagePath, double fitWidth, double fitHeight, boolean preserveRatio, double layoutX, double layoutY) {
+        ImageView imageView = new ImageView(new Image(imagePath));
+        imageView.setFitWidth(fitWidth);
+        imageView.setFitHeight(fitHeight);
+        imageView.setPreserveRatio(preserveRatio);
+        imageView.setLayoutX(layoutX);
+        imageView.setLayoutY(layoutY);
+        return imageView;
     }
-     
+
+    // Method to show the Hangman game screen
+    public static void showHangmanScreen(Stage primaryStage) {
+        // Dispose of the current Stage and create a new one for the Hangman game
+        
+        Hangman hangman = new Hangman(); 
+        hangman.start(new Stage());
+        
+        primaryStage.close();  // Close the current JavaFX stage
+    } 
+
+    // public static void showHangmanScreen(Stage primaryStage) {
+    //     // Create a fade-out transition for the current stage
+    //     FadeTransition fadeOut = new FadeTransition(Duration.millis(500), primaryStage.getScene().getRoot());
+    //     fadeOut.setFromValue(1.0);
+    //     fadeOut.setToValue(0.0);
+    //     fadeOut.setOnFinished(event -> {
+    //         // Start the Hangman game in a new stage
+    //         Hangman hangman = new Hangman();
+    //         Stage hangmanStage = new Stage();
+    //         hangman.start(hangmanStage);
+
+    //         // Close the current stage
+    //         primaryStage.close();
+
+    //         // Create a fade-in transition for the new stage
+    //         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), hangmanStage.getScene().getRoot());
+    //         fadeIn.setFromValue(0.0);
+    //         fadeIn.setToValue(1.0);
+    //         fadeIn.play();
+    //     });
+    //     fadeOut.play();
+    // }
 }
