@@ -1,4 +1,4 @@
-import javafx.animation.FadeTransition;
+// import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -13,7 +13,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+// import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
@@ -37,7 +37,7 @@ public class GUI extends Application {
         primaryStage.setWidth(Constants.FRAME_SIZE.width);
         primaryStage.setHeight(Constants.FRAME_SIZE.height);
         primaryStage.setResizable(false);
-        primaryStage.initStyle(StageStyle.UNDECORATED);
+        // primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setOnCloseRequest(event -> Platform.exit());
 
         JFXPanel jfxPanel = new JFXPanel();
@@ -286,27 +286,4 @@ public class GUI extends Application {
         
         primaryStage.close();  // Close the current JavaFX stage
     } 
-
-    // public static void showHangmanScreen(Stage primaryStage) {
-    //     // Create a fade-out transition for the current stage
-    //     FadeTransition fadeOut = new FadeTransition(Duration.millis(500), primaryStage.getScene().getRoot());
-    //     fadeOut.setFromValue(1.0);
-    //     fadeOut.setToValue(0.0);
-    //     fadeOut.setOnFinished(event -> {
-    //         // Start the Hangman game in a new stage
-    //         Hangman hangman = new Hangman();
-    //         Stage hangmanStage = new Stage();
-    //         hangman.start(hangmanStage);
-
-    //         // Close the current stage
-    //         primaryStage.close();
-
-    //         // Create a fade-in transition for the new stage
-    //         FadeTransition fadeIn = new FadeTransition(Duration.millis(500), hangmanStage.getScene().getRoot());
-    //         fadeIn.setFromValue(0.0);
-    //         fadeIn.setToValue(1.0);
-    //         fadeIn.play();
-    //     });
-    //     fadeOut.play();
-    // }
 }
