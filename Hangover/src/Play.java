@@ -221,7 +221,7 @@ public class Play extends JFrame implements ActionListener {
                 hiddenWordLabel.setText(String.valueOf(hiddenWord));
 
                 // the user guessed the word right
-                if(!hiddenWordLabel.getText().contains("*")){
+                if(!hiddenWordLabel.getText().contains("_ ")){
                     // display dialog with success result
                     resultLabel.setText("You got it right!");
                     resultDialog.setVisible(true);

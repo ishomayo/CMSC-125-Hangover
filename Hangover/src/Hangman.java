@@ -38,6 +38,10 @@ public class Hangman extends Application {
     private Button enterButton;
     private TextField secondsLeft, scoreField;
     private int secondsT = 0;
+    private Scene scene; // Add this at the class level
+
+    private Stage primaryStage;
+
 
     javafx.animation.Timeline timer1 = new javafx.animation.Timeline(
         new javafx.animation.KeyFrame(
@@ -51,6 +55,8 @@ public class Hangman extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+        this.primaryStage = primaryStage;
         primaryStage.setTitle("Hangman Game");
         primaryStage.setWidth(CommonConstants.FRAME_SIZE.width);
         primaryStage.setHeight(CommonConstants.FRAME_SIZE.height);
@@ -372,22 +378,19 @@ public class Hangman extends Application {
                 impendingDoomPlayer.play();
     }
 
-                if (incorrectGuesses >= 6) {
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                    alert.setTitle("Game Over");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Game Over! The word was: " + wordChallenge[1]);
-                    alert.showAndWait();
-
-                    // Stop the impending doom sound and play game over sound
-                    if (impendingDoomPlayer != null) {
-                        impendingDoomPlayer.stop();
-                    }
-
-                    musicPlayer.playSoundEffect(Constants.GAMEOVER);
-                    resetGame(enterButton);
-                    return;  // Exit early to avoid further processing after game over
+            if (incorrectGuesses >= 6) {
+                if (impendingDoomPlayer != null) {
+                    impendingDoomPlayer.stop();
                 }
+            
+                musicPlayer.playSoundEffect(Constants.GAMEOVER);
+                
+                // Switch to the result screen
+                showResultScreen(false);  // false = game over
+                return;
+            }
+    
+    
             }
 
             // Load and scale the icon
@@ -398,24 +401,79 @@ public class Hangman extends Application {
             letterLabels.get(guessedLetter).setGraphic(new ImageView(scaledImage));
             updateHiddenWord(guessedLetter);
 
-            if (!hiddenWordLabel.getText().contains("_ ")) {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                alert.setTitle("Congratulations");
-                alert.setHeaderText(null);
-                alert.setContentText("You got it right!");
-                alert.showAndWait();
-
+            if (!hiddenWordLabel.getText().contains("_")) {
                 timer1.stop();
-                if(secondsT == 1){
+                if (secondsT == 1) {
                     score += 1;
-                } else{
-                    score = score + (60-secondsT);
+                } else {
+                    score = score + (60 - secondsT);
                 }
                 scoreField.setText(String.valueOf(score));
-                resetGame(enterButton);
+            
+                // Switch to the result screen
+                showResultScreen(true);  // true = player won
             }
         }
     }
+
+    private void showResultScreen(boolean isWin) {
+        Pane resultRoot = new Pane();
+        Scene resultScene = new Scene(resultRoot, CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
+    
+        // Background Image
+        Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.jpg");
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        resultRoot.setBackground(new Background(background));
+    
+        // Result message
+        Label resultLabel = new Label(isWin ? "You Won!" : "Game Over!");
+        resultLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold;");
+        resultLabel.setTextFill(Color.BLACK);
+        resultLabel.setLayoutX(300);
+        resultLabel.setLayoutY(100);
+        resultRoot.getChildren().add(resultLabel);
+    
+        // Score Display
+        Label scoreTextLabel = new Label("Score: ");
+        scoreTextLabel.setStyle("-fx-font-size: 24px;");
+        scoreTextLabel.setTextFill(Color.BLACK);
+        scoreTextLabel.setLayoutX(350);
+        scoreTextLabel.setLayoutY(200);
+    
+        Label scoreValueLabel = new Label(String.valueOf(score));
+        scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        scoreValueLabel.setTextFill(Color.BLACK);
+        scoreValueLabel.setLayoutX(450);
+        scoreValueLabel.setLayoutY(200);
+    
+        resultRoot.getChildren().addAll(scoreTextLabel, scoreValueLabel);
+    
+        // Play Again Button
+        Button playAgainButton = new Button("Play Again");
+        playAgainButton.setStyle("-fx-font-size: 18px;");
+        playAgainButton.setLayoutX(350);
+        playAgainButton.setLayoutY(300);
+        playAgainButton.setOnAction(e -> start(primaryStage));  // Restart the game
+    
+        // Home Button (Redirect to main menu)
+        Button homeButton = new Button("Home");
+        homeButton.setStyle("-fx-font-size: 18px;");
+        homeButton.setLayoutX(500);
+        homeButton.setLayoutY(300);
+        homeButton.setOnAction(e -> {
+            try {
+                new GUI().start(primaryStage);  // Load home screen
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+    
+        resultRoot.getChildren().addAll(playAgainButton, homeButton);
+    
+        // Switch Scene
+        primaryStage.setScene(resultScene);
+    }
+    
 
     private void updateHiddenWord(char guessedLetter) {
         char[] hiddenWord = hiddenWordLabel.getText().toCharArray();
@@ -459,7 +517,16 @@ public class Hangman extends Application {
         // Optionally, clear the input field
         inputField.setText("");
     }
-    
+
+
+    public static void showHangmanScreen(Stage primaryStage) {
+        // Dispose of the current Stage and create a new one for the Hangman game
+        
+        Hangman hangman = new Hangman(); 
+        hangman.start(new Stage());
+        
+        primaryStage.close();  // Close the current JavaFX stage
+    } 
 
     public static void main(String[] args) {
         launch(args);

@@ -55,7 +55,7 @@ public class CustomTools {
         String hiddenWord = "";
         for(int i = 0; i < word.length(); i++){
             if(!(word.charAt(i) == ' ')){
-                hiddenWord += "*";
+                hiddenWord += "_";
             }else{
                 hiddenWord += " ";
             }
