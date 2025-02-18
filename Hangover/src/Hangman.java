@@ -1,3 +1,4 @@
+
 import javafx.application.Application;
 // import javafx.event.ActionEvent;
 import javafx.scene.Scene;
@@ -12,11 +13,15 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 // import javafx.scene.text.Font;
 import javafx.stage.Stage;
 // import javafx.stage.StageStyle;
+import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.util.HashMap;
 
 // import javax.swing.JLabel;
@@ -50,7 +55,7 @@ public class Hangman extends Application {
         primaryStage.setWidth(CommonConstants.FRAME_SIZE.width);
         primaryStage.setHeight(CommonConstants.FRAME_SIZE.height);
         primaryStage.setResizable(false);
-        // primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setOnCloseRequest(event -> {
             // Load the Lobby Screen when the window is closed
             try {
@@ -206,18 +211,42 @@ public class Hangman extends Application {
 
         // Input field for letter guesses
         inputField = new javafx.scene.control.TextField();
-        inputField.setStyle("-fx-font-size: 24px; -fx-alignment: center; ");
+        inputField.setStyle("-fx-font-size: 24px; -fx-alignment: center;");
         inputField.setLayoutX(250);
         inputField.setLayoutY(400);
         inputField.setPrefWidth(50);
         inputField.setPrefHeight(50);
+        inputField.requestFocus();
+        inputField.setFocusTraversable(false); // Prevent needing to click first
+
+        // Restrict input to a single letter, auto-uppercase, and replace old value
         inputField.setOnKeyTyped(event -> {
-            char c = event.getCharacter().charAt(0);
-            if (!Character.isLetter(c) || inputField.getText().length() >= 1) {
-                event.consume();
+            String input = event.getCharacter().toUpperCase();
+            
+            if (!input.matches("[A-Z]")) {
+                event.consume(); // Ignore invalid input
+                return;
+            }
+
+            inputField.setText(input); // Always replace with the new character
+        });
+
+        // Make sure the text field is focused when the game starts
+        inputField.requestFocus();
+
+        // Bind Enter key to the enter button
+        inputField.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case ENTER:
+                    enterButton.fire(); // Simulate button click
+                    break;
+                default:
+                    break;
             }
         });
+
         root.getChildren().add(inputField);
+
 
         Image defaultIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\default_icon.png");
         Image hoverIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\hover_icon.png");
@@ -309,6 +338,10 @@ public class Hangman extends Application {
     private void handleEnterButtonAction(Button enterButton) {
         String input = inputField.getText().toUpperCase();
         if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'Z') {
+
+            MusicPlayer musicPlayer = new MusicPlayer();
+            MediaPlayer impendingDoomPlayer = null;
+
             char guessedLetter = input.charAt(0);
             inputField.setText("");  // Clear the input field
 
@@ -331,12 +364,27 @@ public class Hangman extends Application {
                 // Call the updated scale method for hangman image
                 scaleHangmanImage(incorrectGuesses);  // Scale based on number of incorrect guesses
 
+                if (incorrectGuesses >= 5 && impendingDoomPlayer == null) {
+                // Start playing the impending doom sound in a loop
+                Media doomMedia = new Media(new File(Constants.IMPEND).toURI().toString());
+                impendingDoomPlayer = new MediaPlayer(doomMedia);
+                impendingDoomPlayer.setCycleCount(MediaPlayer.INDEFINITE);  // Looping
+                impendingDoomPlayer.play();
+    }
+
                 if (incorrectGuesses >= 6) {
                     javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                     alert.setTitle("Game Over");
                     alert.setHeaderText(null);
                     alert.setContentText("Game Over! The word was: " + wordChallenge[1]);
                     alert.showAndWait();
+
+                    // Stop the impending doom sound and play game over sound
+                    if (impendingDoomPlayer != null) {
+                        impendingDoomPlayer.stop();
+                    }
+
+                    musicPlayer.playSoundEffect(Constants.GAMEOVER);
                     resetGame(enterButton);
                     return;  // Exit early to avoid further processing after game over
                 }
@@ -350,7 +398,7 @@ public class Hangman extends Application {
             letterLabels.get(guessedLetter).setGraphic(new ImageView(scaledImage));
             updateHiddenWord(guessedLetter);
 
-            if (!hiddenWordLabel.getText().contains("*")) {
+            if (!hiddenWordLabel.getText().contains("_ ")) {
                 javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
                 alert.setTitle("Congratulations");
                 alert.setHeaderText(null);
@@ -383,26 +431,35 @@ public class Hangman extends Application {
         // Reload the word challenge
         wordChallenge = wordDB.loadChallenge();
         incorrectGuesses = 0;
-
+    
         secondsT = 0;
         timer1.playFromStart();
-
+    
         scaleHangmanImage(incorrectGuesses); // Apply scaling to the image
-
+    
         // Reset the hidden word
         hiddenWordLabel.setText(CustomTools.hideWords(wordChallenge[1]));
-
-        // Reset letter images (back to default)
+    
+        // Reset letter labels (back to default state)
         letterLabels.forEach((k, v) -> {
-            Label newLabel = createLetterLabel(k);
-            v.setGraphic(newLabel.getGraphic());
+            // Reset the label with the default image and state
+            Image defaultImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + k + "_default.png");
+            ImageView imageView = new ImageView(defaultImage);
+            imageView.setFitWidth(50);
+            imageView.setFitHeight(50);
+            imageView.setPreserveRatio(true);
+            v.setGraphic(imageView);
+    
+            // Ensure label is interactive again
+            v.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
         });
-
+    
         enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
-
+    
         // Optionally, clear the input field
         inputField.setText("");
     }
+    
 
     public static void main(String[] args) {
         launch(args);
