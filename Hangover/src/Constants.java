@@ -1,7 +1,7 @@
 import java.awt.Dimension;
 
 public class Constants {
-    private static final String BASE_PATH = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\";
+    private static final String BASE_PATH = "C:/Users/Eugene/Desktop/Git/CMSC-125-Hangover/Hangover/resources/";
 
     public static final String SPLASH_VIDEO_PATH = BASE_PATH + "Loading Screen.mp4";
     public static final String LOBBY_VIDEO_PATH = BASE_PATH + "Background_Lobby.mp4";
