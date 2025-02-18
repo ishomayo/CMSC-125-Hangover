@@ -1,5 +1,7 @@
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.application.Platform;
 // import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -16,10 +18,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 // import javafx.scene.text.Font;
 import javafx.stage.Stage;
 // import javafx.stage.StageStyle;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.HashMap;
@@ -55,7 +59,6 @@ public class Hangman extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Hangman Game");
         primaryStage.setWidth(CommonConstants.FRAME_SIZE.width);
@@ -71,6 +74,7 @@ public class Hangman extends Application {
             }
         });
 
+        // Step 1: Set up the root pane and scene
         Pane root = new Pane();
         Scene scene = new Scene(root);
 
@@ -78,13 +82,28 @@ public class Hangman extends Application {
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         root.setBackground(new Background(background));
 
+        // Step 2: Create a black rectangle that covers the entire scene
+        Rectangle blackFade = new Rectangle(CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
+        blackFade.setFill(Color.BLACK);
+        root.getChildren().add(blackFade);  // Add the black rectangle to the scene
+
+        // Step 3: Set up and show the scene
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        // Step 4: Apply fade-out transition on the black rectangle
+        FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), blackFade);
+        fadeOut.setFromValue(1.0);  // Start fully visible (black)
+        fadeOut.setToValue(0.0);    // Fade to fully transparent
+        fadeOut.setOnFinished(event -> root.getChildren().remove(blackFade));  // Remove the black rectangle after fade-out
+        fadeOut.play();  // Start the fade-out transition
+
+        // Step 5: Set up the rest of your game logic
         wordChallenge = wordDB.loadChallenge();
         letterLabels = new HashMap<>();
         addGuiComponents(root);
     }
+
     
     private void addGuiComponents(Pane root) {
         // Hangman image
@@ -104,8 +123,8 @@ public class Hangman extends Application {
         scoreLabel = new Label("Score: ");
         scoreLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         scoreLabel.setTextFill(Color.BLACK);
-        scoreLabel.setLayoutX(500);
-        scoreLabel.setLayoutY(70);
+        scoreLabel.setLayoutX(765);
+        scoreLabel.setLayoutY(53);
         scoreLabel.setPrefWidth(200);
         scoreLabel.setPrefHeight(30);
         root.getChildren().add(scoreLabel);
@@ -114,8 +133,8 @@ public class Hangman extends Application {
         scoreField.setText(String.valueOf(score));
         scoreField.setEditable(false);
         scoreField.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
-        scoreField.setLayoutX(630);
-        scoreField.setLayoutY(70);
+        scoreField.setLayoutX(840);
+        scoreField.setLayoutY(46);
         scoreField.setPrefWidth(60);
         scoreField.setPrefHeight(30);
         root.getChildren().add(scoreField);
@@ -126,11 +145,11 @@ public class Hangman extends Application {
 
         // Timer label
         timer1.play();
-        timerLabel = new Label("Time Left: ");
+        timerLabel = new Label("Time: ");
         timerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         timerLabel.setTextFill(Color.BLACK);
-        timerLabel.setLayoutX(500);
-        timerLabel.setLayoutY(40);
+        timerLabel.setLayoutX(400);
+        timerLabel.setLayoutY(50);
         timerLabel.setPrefWidth(200);
         timerLabel.setPrefHeight(30);
         root.getChildren().add(timerLabel);
@@ -138,7 +157,7 @@ public class Hangman extends Application {
         secondsLeft = new TextField();
         secondsLeft.setEditable(false);
         secondsLeft.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
-        secondsLeft.setLayoutX(630);
+        secondsLeft.setLayoutX(470);
         secondsLeft.setLayoutY(40);
         secondsLeft.setPrefWidth(60);
         secondsLeft.setPrefHeight(30);
@@ -222,8 +241,15 @@ public class Hangman extends Application {
         inputField.setLayoutY(400);
         inputField.setPrefWidth(50);
         inputField.setPrefHeight(50);
-        inputField.requestFocus();
-        inputField.setFocusTraversable(false); // Prevent needing to click first
+
+        // Request focus once the scene is shown
+        inputField.setFocusTraversable(true);  // Allow tabbing
+        inputField.setLayoutX(250);
+        inputField.setLayoutY(400);
+
+        // Once the window is displayed, ensure focus on the input field
+        Platform.runLater(() -> inputField.requestFocus());
+
 
         // Restrict input to a single letter, auto-uppercase, and replace old value
         inputField.setOnKeyTyped(event -> {
@@ -409,9 +435,7 @@ public class Hangman extends Application {
                     score = score + (60 - secondsT);
                 }
                 scoreField.setText(String.valueOf(score));
-            
-                // Switch to the result screen
-                showResultScreen(true);  // true = player won
+                resetGame(enterButton);
             }
         }
     }
@@ -440,7 +464,7 @@ public class Hangman extends Application {
         scoreTextLabel.setLayoutX(350);
         scoreTextLabel.setLayoutY(200);
     
-        Label scoreValueLabel = new Label(String.valueOf(score));
+        Label scoreValueLabel = new Label(String.valueOf(score + 30));
         scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
         scoreValueLabel.setTextFill(Color.BLACK);
         scoreValueLabel.setLayoutX(450);
@@ -453,7 +477,15 @@ public class Hangman extends Application {
         playAgainButton.setStyle("-fx-font-size: 18px;");
         playAgainButton.setLayoutX(350);
         playAgainButton.setLayoutY(300);
-        playAgainButton.setOnAction(e -> start(primaryStage));  // Restart the game
+        playAgainButton.setOnAction(e -> {
+             // Close the result screen
+                primaryStage.close();
+
+                // Restart the game in a new stage
+                Hangman hangman = new Hangman(); 
+                Stage newStage = new Stage();
+                hangman.start(newStage);
+        });  // Restart the game
     
         // Home Button (Redirect to main menu)
         Button homeButton = new Button("Home");
@@ -461,11 +493,9 @@ public class Hangman extends Application {
         homeButton.setLayoutX(500);
         homeButton.setLayoutY(300);
         homeButton.setOnAction(e -> {
-            try {
-                new GUI().start(primaryStage);  // Load home screen
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            GUI gui = new GUI();
+            gui.start(new Stage());
+            primaryStage.close(); 
         });
     
         resultRoot.getChildren().addAll(playAgainButton, homeButton);
@@ -517,7 +547,6 @@ public class Hangman extends Application {
         // Optionally, clear the input field
         inputField.setText("");
     }
-
 
     public static void showHangmanScreen(Stage primaryStage) {
         // Dispose of the current Stage and create a new one for the Hangman game
