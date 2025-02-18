@@ -1,4 +1,4 @@
-// import javafx.animation.FadeTransition;
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -13,7 +13,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-// import javafx.stage.StageStyle;
+import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
@@ -37,7 +37,7 @@ public class GUI extends Application {
         primaryStage.setWidth(Constants.FRAME_SIZE.width);
         primaryStage.setHeight(Constants.FRAME_SIZE.height);
         primaryStage.setResizable(false);
-        // primaryStage.initStyle(StageStyle.UNDECORATED);
+        primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setOnCloseRequest(event -> Platform.exit());
 
         JFXPanel jfxPanel = new JFXPanel();
@@ -107,7 +107,7 @@ public class GUI extends Application {
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
         
 
-        Image selectDifficultyImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/SelecctDifficulty.png");
+        Image selectDifficultyImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/SelectDifficulty.png");
         ImageView imageView = new ImageView(selectDifficultyImage);
     
         // Ensure image fits without distortion
