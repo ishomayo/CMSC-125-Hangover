@@ -225,7 +225,7 @@ public class Hangman extends Application {
 
         // Letter panel for displaying letter icons T - Z
         GridPane letterPanelT_Z = new GridPane();
-        letterPanelT_Z.setLayoutX(50);
+        letterPanelT_Z.setLayoutX(150);
         letterPanelT_Z.setLayoutY(300);
         letterPanelT_Z.setHgap(10);
         letterPanelT_Z.setVgap(10);
@@ -495,7 +495,7 @@ public class Hangman extends Application {
     Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
     Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
 
-    Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 0, 350, 250, 200, Constants.CLICK,
+    Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 350, 250, 250, 200, Constants.CLICK,
             event -> {
                 primaryStage.close();
                 Hangman hangman = new Hangman(); 
@@ -507,16 +507,22 @@ public class Hangman extends Application {
     Image imgReturnHover = new Image(Constants.RETURN_HOVER);
     Image imgReturnClick = new Image(Constants.RETURN_CLICK);
 
-    Button Return = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 0, 10, 250, 200, Constants.CLICK,
+    Button Return = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 350, 260, 250, 100, Constants.CLICK,
             event -> {
                 primaryStage.close();
                 Hangman hangman = new Hangman(); 
                 Stage newStage = new Stage();
                 hangman.start(newStage);
-            });   
+            });
 
-    resultRoot.getChildren().add(Return);
-    resultRoot.getChildren().add(playAgainButton);
+    // Layout
+    VBox layout = new VBox(20, playAgainButton, Return);
+    layout.setAlignment(Pos.CENTER); // Center the VBox inside StackPane
+    StackPane.setMargin(layout, new Insets(0, 0, 0, 0)); // Move it slightly downward
+
+    resultRoot.getChildren().add(layout);
+
+
     resultRoot.getChildren().add(scoreTextLabel);
     resultRoot.getChildren().add(scoreValueLabel);
 
