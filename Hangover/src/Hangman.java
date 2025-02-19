@@ -27,9 +27,11 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.function.UnaryOperator;
 
 // import javax.swing.JLabel;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 
 public class Hangman extends Application {
     private int incorrectGuesses;
@@ -248,18 +250,35 @@ public class Hangman extends Application {
         // Once the window is displayed, ensure focus on the input field
         Platform.runLater(() -> inputField.requestFocus());
 
-
+        
         // Restrict input to a single letter, auto-uppercase, and replace old value
         inputField.setOnKeyTyped(event -> {
             String input = event.getCharacter().toUpperCase();
             
-            if (!input.matches("[A-Z]")) {
+            if (!input.matches("[a-zA-Z]")) {
                 event.consume(); // Ignore invalid input
                 return;
             }
 
             inputField.setText(input); // Always replace with the new character
+
+            inputField.positionCaret(1);
+
+            event.consume();
         });
+
+        UnaryOperator<TextFormatter.Change> letterFilter = change -> {
+            String newText = change.getControlNewText().toUpperCase();
+
+            // Allow only a single uppercase letter (A-Z)
+            if (newText.matches("[A-Z]?")) {
+                return change;
+            }
+            return null; // Reject invalid input
+        };
+        
+        inputField.setTextFormatter(new TextFormatter<>(letterFilter));
+        
 
         // Make sure the text field is focused when the game starts
         inputField.requestFocus();
@@ -289,16 +308,16 @@ public class Hangman extends Application {
         ImageView imageViewHover = new ImageView(hoverIcon);
         ImageView imageViewClicked = new ImageView(clickedIcon);
 
-        enterButton.setPrefHeight(30);  // Set height of the button
+        enterButton.setPrefHeight(50);  // Set height of the button
 
         // Set the image to adjust its aspect ratio while maintaining the height
-        imageViewDefault.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewDefault.setFitHeight(50);      // Set the height of the ImageView to 50
         imageViewDefault.setPreserveRatio(true); // Keep the aspect ratio of the image
 
-        imageViewHover.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewHover.setFitHeight(50);      // Set the height of the ImageView to 50
         imageViewHover.setPreserveRatio(true);
 
-        imageViewClicked.setFitHeight(30);      // Set the height of the ImageView to 50
+        imageViewClicked.setFitHeight(50);      // Set the height of the ImageView to 50
         imageViewClicked.setPreserveRatio(true);
 
         enterButton.setGraphic(imageViewDefault);
