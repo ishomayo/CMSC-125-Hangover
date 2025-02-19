@@ -51,6 +51,11 @@ public class Hangman extends Application {
     private TextField secondsLeft, scoreField;
     private int secondsT = 0;
     private Stage primaryStage;
+    private String category;
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     javafx.animation.Timeline timer1 = new javafx.animation.Timeline(
             new javafx.animation.KeyFrame(
@@ -105,7 +110,7 @@ public class Hangman extends Application {
         fadeOut.play(); // Start the fade-out transition
 
         // Step 5: Set up the rest of your game logic
-        wordChallenge = wordDB.loadChallenge();
+        wordChallenge = wordDB.loadChallenge(category);
         letterLabels = new HashMap<>();
         addGuiComponents(root);
     }
@@ -594,7 +599,7 @@ public class Hangman extends Application {
 
     private void resetGame(Button enterButton) {
         // Reload the word challenge
-        wordChallenge = wordDB.loadChallenge();
+        wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
 
         secondsT = 0;

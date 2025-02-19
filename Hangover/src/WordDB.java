@@ -42,14 +42,17 @@ public class WordDB {
         }
     }
 
-    public String[] loadChallenge(){
+    public String[] loadChallenge(String chosenCategory) {
         Random rand = new Random();
 
-        // generate random number to choose category
-        String category = categories.get(rand.nextInt(categories.size()));
+        // Use the chosenCategory instead of generating a random category
+        String category = chosenCategory;
 
-        // generate random number to choose the value from category
+        // Generate random number to choose the value from category
         String[] categoryValues = wordList.get(category);
+        if (categoryValues == null) {
+            throw new IllegalArgumentException("Category not found: " + category);
+        }
         String word = categoryValues[rand.nextInt(categoryValues.length)];
 
         // [0] -> category and [1] -> word
