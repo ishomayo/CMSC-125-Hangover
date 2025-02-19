@@ -398,6 +398,7 @@ public class GUI extends Application {
 
     // Method to show the Hangman game screen
     public static void showHangmanScreen(Stage primaryStage, String category) {
+        bgm.stopMusic();
         Hangman hangman = new Hangman();
         hangman.setCategory(category); // Pass the category to the Hangman class
         hangman.start(new Stage());
