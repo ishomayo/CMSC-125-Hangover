@@ -37,6 +37,14 @@ public class Constants {
     public static final String IMG_DIFFICULT_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-hover.png";
     public static final String IMG_DIFFICULT_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/diff-click.png";
 
+    public static final String PLAYAGAIN = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/140.png";
+    public static final String PLAYAGAIN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/141.png";
+    public static final String PLAYAGAIN_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/142.png";
+
+    public static final String RETURN = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/143.png";
+    public static final String RETURN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/144.png";
+    public static final String RETURN_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/145.png";
+
     // Return Button
     public static final String IMG_RETURN = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return.png";
     public static final String IMG_RETURN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-hover.png";
@@ -50,4 +58,5 @@ public class Constants {
     public final static String GAMEOVER = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\gameover.wav";
     public final static String IMPEND = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\impendingDoom.wav";
     public final static String BGM = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\bgmusic.mp3";
+    public final static String RESULTS = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.jpg";
 }

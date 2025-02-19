@@ -252,7 +252,7 @@ public class GUI extends Application {
                 }
             
                 // Overloaded method to create an image button with hover and click effects
-                private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, String soundPath, EventHandler<ActionEvent> action) {
+        private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, String soundPath, EventHandler<ActionEvent> action) {
             Button button = new Button();
             ImageView imageView = new ImageView(image);
             imageView.setFitWidth(width);

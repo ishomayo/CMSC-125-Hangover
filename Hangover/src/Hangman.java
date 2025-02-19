@@ -2,6 +2,10 @@
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 // import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +19,8 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
@@ -236,14 +242,21 @@ public class Hangman extends Application {
 
         // Input field for letter guesses
         inputField = new javafx.scene.control.TextField();
-        inputField.setStyle("-fx-font-size: 24px; -fx-alignment: center;");
+        inputField.setStyle(
+            "-fx-font-size: 24px; " +
+            "-fx-alignment: center; " +
+            "-fx-border-color: black; " + 
+            "-fx-border-width: 2px; " +  
+            "-fx-border-radius: 5px; " +  
+            "-fx-padding: 5px;" +
+            "-fx-focus-color: transparent; " + // Remove blue focus color
+            "-fx-faint-focus-color: transparent;"         
+        );
         inputField.setLayoutX(250);
         inputField.setLayoutY(400);
         inputField.setPrefWidth(50);
         inputField.setPrefHeight(50);
 
-        // Request focus once the scene is shown
-        inputField.setFocusTraversable(true);  // Allow tabbing
         inputField.setLayoutX(250);
         inputField.setLayoutY(400);
 
@@ -308,21 +321,21 @@ public class Hangman extends Application {
         ImageView imageViewHover = new ImageView(hoverIcon);
         ImageView imageViewClicked = new ImageView(clickedIcon);
 
-        enterButton.setPrefHeight(50);  // Set height of the button
+        enterButton.setPrefHeight(60);  // Set height of the button
 
         // Set the image to adjust its aspect ratio while maintaining the height
-        imageViewDefault.setFitHeight(50);      // Set the height of the ImageView to 50
+        imageViewDefault.setFitHeight(60);      // Set the height of the ImageView to 50
         imageViewDefault.setPreserveRatio(true); // Keep the aspect ratio of the image
 
-        imageViewHover.setFitHeight(50);      // Set the height of the ImageView to 50
+        imageViewHover.setFitHeight(60);      // Set the height of the ImageView to 50
         imageViewHover.setPreserveRatio(true);
 
-        imageViewClicked.setFitHeight(50);      // Set the height of the ImageView to 50
+        imageViewClicked.setFitHeight(60);      // Set the height of the ImageView to 50
         imageViewClicked.setPreserveRatio(true);
 
         enterButton.setGraphic(imageViewDefault);
         enterButton.setLayoutX(300);
-        enterButton.setLayoutY(405);
+        enterButton.setLayoutY(395);
         enterButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
         enterButton.setOnMouseEntered(event -> enterButton.setGraphic(imageViewHover));
         enterButton.setOnMouseExited(event -> enterButton.setGraphic(imageViewDefault));
@@ -455,68 +468,101 @@ public class Hangman extends Application {
     }
 
     private void showResultScreen(boolean isWin) {
-        Pane resultRoot = new Pane();
-        Scene resultScene = new Scene(resultRoot, CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
-    
-        // Background Image
-        Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.jpg");
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-        resultRoot.setBackground(new Background(background));
-    
-        // Result message
-        Label resultLabel = new Label(isWin ? "You Won!" : "Game Over!");
-        resultLabel.setStyle("-fx-font-size: 48px; -fx-font-weight: bold;");
-        resultLabel.setTextFill(Color.BLACK);
-        resultLabel.setLayoutX(300);
-        resultLabel.setLayoutY(100);
-        resultRoot.getChildren().add(resultLabel);
-    
-        // Score Display
-        Label scoreTextLabel = new Label("Score: ");
-        scoreTextLabel.setStyle("-fx-font-size: 24px;");
-        scoreTextLabel.setTextFill(Color.BLACK);
-        scoreTextLabel.setLayoutX(350);
-        scoreTextLabel.setLayoutY(200);
-    
-        Label scoreValueLabel = new Label(String.valueOf(score + 30));
-        scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-        scoreValueLabel.setTextFill(Color.BLACK);
-        scoreValueLabel.setLayoutX(450);
-        scoreValueLabel.setLayoutY(200);
-    
-        resultRoot.getChildren().addAll(scoreTextLabel, scoreValueLabel);
-    
-        // Play Again Button
-        Button playAgainButton = new Button("Play Again");
-        playAgainButton.setStyle("-fx-font-size: 18px;");
-        playAgainButton.setLayoutX(350);
-        playAgainButton.setLayoutY(300);
-        playAgainButton.setOnAction(e -> {
-             // Close the result screen
-                primaryStage.close();
+    StackPane resultRoot = new StackPane();
+    Scene resultScene = new Scene(resultRoot, CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
 
-                // Restart the game in a new stage
+    // Background Image
+    Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.png");
+    System.out.println("Image loaded: " + backgroundImage.getWidth() + "x" + backgroundImage.getHeight()); // Debugging
+
+    BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+    resultRoot.setBackground(new Background(background));
+    
+    // Score Display
+    Label scoreTextLabel = new Label("Score: ");
+    scoreTextLabel.setStyle("-fx-font-size: 24px;");
+    scoreTextLabel.setTextFill(Color.BLACK);
+    scoreTextLabel.setAlignment(Pos.CENTER);
+    StackPane.setMargin(scoreTextLabel, new Insets(0, 0, 150, 50));
+
+    Label scoreValueLabel = new Label(String.valueOf(score + 30));
+    scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+    scoreValueLabel.setTextFill(Color.BLACK);
+    scoreValueLabel.setAlignment(Pos.CENTER);
+    StackPane.setMargin(scoreValueLabel, new Insets(0, 0, 150, 150));
+
+    Image imgPlayAgain = new Image(Constants.PLAYAGAIN);
+    Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
+    Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
+
+    Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 0, 350, 250, 200, Constants.CLICK,
+            event -> {
+                primaryStage.close();
                 Hangman hangman = new Hangman(); 
                 Stage newStage = new Stage();
                 hangman.start(newStage);
-        });  // Restart the game
+            });
+
+    Image imgReturn = new Image(Constants.RETURN);
+    Image imgReturnHover = new Image(Constants.RETURN_HOVER);
+    Image imgReturnClick = new Image(Constants.RETURN_CLICK);
+
+    Button Return = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 0, 10, 250, 200, Constants.CLICK,
+            event -> {
+                primaryStage.close();
+                Hangman hangman = new Hangman(); 
+                Stage newStage = new Stage();
+                hangman.start(newStage);
+            });   
+
+    resultRoot.getChildren().add(Return);
+    resultRoot.getChildren().add(playAgainButton);
+    resultRoot.getChildren().add(scoreTextLabel);
+    resultRoot.getChildren().add(scoreValueLabel);
+
+    // Show Scene
+    primaryStage.setScene(resultScene);
+}
+
+static MusicPlayer player = new MusicPlayer();
+
+private static void setButtonGraphic(Button button, Image image, double width, double height) {
+    ImageView imageView = new ImageView(image);
+    imageView.setFitWidth(width);
+    imageView.setFitHeight(height);
+    button.setGraphic(imageView);
+}
+
+private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, String soundPath, EventHandler<ActionEvent> action) {
+            Button button = new Button();
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+            button.setGraphic(imageView);
+            button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+            button.setLayoutX(x);
+            button.setLayoutY(y);
+            button.setPrefWidth(width);
+            button.setPrefHeight(height);
+        
+            if (hoverImage != null && clickImage != null) {
+                button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
+                button.setOnMouseExited(event -> setButtonGraphic(button, image, width, height));
+                button.setOnMousePressed(event -> setButtonGraphic(button, clickImage, width, height));
+                button.setOnMouseReleased(event -> setButtonGraphic(button, image, width, height));
+            }
+        
+            if (action != null) {
+                button.setOnAction(event -> {
+                    if (soundPath != null && !soundPath.isEmpty()) {
+                        player.playSoundEffect(soundPath); // Play sound effect
+                }
+                action.handle(event);
+            });
+        }
     
-        // Home Button (Redirect to main menu)
-        Button homeButton = new Button("Home");
-        homeButton.setStyle("-fx-font-size: 18px;");
-        homeButton.setLayoutX(500);
-        homeButton.setLayoutY(300);
-        homeButton.setOnAction(e -> {
-            GUI gui = new GUI();
-            gui.start(new Stage());
-            primaryStage.close(); 
-        });
-    
-        resultRoot.getChildren().addAll(playAgainButton, homeButton);
-    
-        // Switch Scene
-        primaryStage.setScene(resultScene);
-    }
+        return button;
+    }    
     
 
     private void updateHiddenWord(char guessedLetter) {
