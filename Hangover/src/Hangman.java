@@ -491,34 +491,39 @@ public class Hangman extends Application {
     scoreValueLabel.setAlignment(Pos.CENTER);
     StackPane.setMargin(scoreValueLabel, new Insets(0, 0, 150, 150));
 
-    Image imgPlayAgain = new Image(Constants.PLAYAGAIN);
-    Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
-    Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
+    // Images
+Image imgPlayAgain = new Image(Constants.PLAYAGAIN);
+Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
+Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
 
-    Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 350, 250, 250, 200, Constants.CLICK,
-            event -> {
+Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 
+        250, 100, 250, 60, Constants.CLICK, 
+        event -> {
+            primaryStage.close();
+            Hangman hangman = new Hangman(); 
+            Stage newStage = new Stage();
+            hangman.start(newStage);
+        });
+
+Image imgReturn = new Image(Constants.RETURN);
+Image imgReturnHover = new Image(Constants.RETURN_HOVER);
+Image imgReturnClick = new Image(Constants.RETURN_CLICK);
+
+Button returnButton = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 
+        250, 100, 250, 60, Constants.CLICK, 
+        event -> {
+                GUI gui = new GUI();
+                gui.start(new Stage());
                 primaryStage.close();
-                Hangman hangman = new Hangman(); 
-                Stage newStage = new Stage();
-                hangman.start(newStage);
-            });
+        });
 
-    Image imgReturn = new Image(Constants.RETURN);
-    Image imgReturnHover = new Image(Constants.RETURN_HOVER);
-    Image imgReturnClick = new Image(Constants.RETURN_CLICK);
+// Layout
+VBox layout = new VBox(15, playAgainButton, returnButton);
+layout.setAlignment(Pos.CENTER);
 
-    Button Return = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 350, 260, 250, 100, Constants.CLICK,
-            event -> {
-                primaryStage.close();
-                Hangman hangman = new Hangman(); 
-                Stage newStage = new Stage();
-                hangman.start(newStage);
-            });
-
-    // Layout
-    VBox layout = new VBox(20, playAgainButton, Return);
-    layout.setAlignment(Pos.CENTER); // Center the VBox inside StackPane
-    StackPane.setMargin(layout, new Insets(0, 0, 0, 0)); // Move it slightly downward
+// Shift downward
+StackPane root = new StackPane(layout);
+StackPane.setMargin(layout, new Insets(145, 0, 0, 0)); // Adjust downward// Move it slightly downward
 
     resultRoot.getChildren().add(layout);
 
