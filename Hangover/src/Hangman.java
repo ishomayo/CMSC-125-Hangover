@@ -122,6 +122,9 @@ public class Hangman extends Application {
     }
 
     private void addGuiComponents(Pane root) {
+        if (!bgm.isPlaying()) { // Check if the music is already playing
+            bgm.playMusic(Constants.INGAMEBGM);
+        }
         // Hangman image
         hangmanImage = new Label();
         ImageView hangmanImageView = new ImageView(new Image(CommonConstants.IMAGE_PATH));
@@ -607,6 +610,7 @@ public class Hangman extends Application {
 
     private void resetGame(Button enterButton) {
         // Reload the word challenge
+        bgm.stopMusic();
         
         wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
