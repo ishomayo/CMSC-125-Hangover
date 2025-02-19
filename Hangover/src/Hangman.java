@@ -52,16 +52,13 @@ public class Hangman extends Application {
     private int secondsT = 0;
     private Stage primaryStage;
 
-
     javafx.animation.Timeline timer1 = new javafx.animation.Timeline(
-        new javafx.animation.KeyFrame(
-            javafx.util.Duration.seconds(1),
-            event -> {
-                secondsT++;
-                secondsLeft.setText(String.valueOf(secondsT));
-            }
-        )
-    );
+            new javafx.animation.KeyFrame(
+                    javafx.util.Duration.seconds(1),
+                    event -> {
+                        secondsT++;
+                        secondsLeft.setText(String.valueOf(secondsT));
+                    }));
 
     @Override
     public void start(Stage primaryStage) {
@@ -84,14 +81,16 @@ public class Hangman extends Application {
         Pane root = new Pane();
         Scene scene = new Scene(root);
 
-        Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\InGame_Screen.jpg");
-        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        Image backgroundImage = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\InGame_Screen.jpg");
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         root.setBackground(new Background(background));
 
         // Step 2: Create a black rectangle that covers the entire scene
         Rectangle blackFade = new Rectangle(CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
         blackFade.setFill(Color.BLACK);
-        root.getChildren().add(blackFade);  // Add the black rectangle to the scene
+        root.getChildren().add(blackFade); // Add the black rectangle to the scene
 
         // Step 3: Set up and show the scene
         primaryStage.setScene(scene);
@@ -99,10 +98,11 @@ public class Hangman extends Application {
 
         // Step 4: Apply fade-out transition on the black rectangle
         FadeTransition fadeOut = new FadeTransition(Duration.seconds(3), blackFade);
-        fadeOut.setFromValue(1.0);  // Start fully visible (black)
-        fadeOut.setToValue(0.0);    // Fade to fully transparent
-        fadeOut.setOnFinished(event -> root.getChildren().remove(blackFade));  // Remove the black rectangle after fade-out
-        fadeOut.play();  // Start the fade-out transition
+        fadeOut.setFromValue(1.0); // Start fully visible (black)
+        fadeOut.setToValue(0.0); // Fade to fully transparent
+        fadeOut.setOnFinished(event -> root.getChildren().remove(blackFade)); // Remove the black rectangle after
+                                                                              // fade-out
+        fadeOut.play(); // Start the fade-out transition
 
         // Step 5: Set up the rest of your game logic
         wordChallenge = wordDB.loadChallenge();
@@ -110,7 +110,6 @@ public class Hangman extends Application {
         addGuiComponents(root);
     }
 
-    
     private void addGuiComponents(Pane root) {
         // Hangman image
         hangmanImage = new Label();
@@ -120,7 +119,7 @@ public class Hangman extends Application {
         hangmanImageView.setPreserveRatio(true); // Preserve the aspect ratio
         hangmanImage.setGraphic(hangmanImageView);
         hangmanImage.setLayoutX(200); // Set the desired X position
-        hangmanImage.setLayoutY(10);  // Set the desired Y position
+        hangmanImage.setLayoutY(10); // Set the desired Y position
         root.getChildren().add(hangmanImage);
 
         scaleHangmanImage(incorrectGuesses);
@@ -138,14 +137,13 @@ public class Hangman extends Application {
         scoreField = new TextField();
         scoreField.setText(String.valueOf(score));
         scoreField.setEditable(false);
-        scoreField.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
+        scoreField.setStyle(
+                "-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
         scoreField.setLayoutX(840);
         scoreField.setLayoutY(46);
         scoreField.setPrefWidth(60);
         scoreField.setPrefHeight(30);
         root.getChildren().add(scoreField);
-
-
 
         timer1.setCycleCount(javafx.animation.Animation.INDEFINITE);
 
@@ -162,7 +160,8 @@ public class Hangman extends Application {
 
         secondsLeft = new TextField();
         secondsLeft.setEditable(false);
-        secondsLeft.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
+        secondsLeft.setStyle(
+                "-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
         secondsLeft.setLayoutX(470);
         secondsLeft.setLayoutY(40);
         secondsLeft.setPrefWidth(60);
@@ -243,15 +242,14 @@ public class Hangman extends Application {
         // Input field for letter guesses
         inputField = new javafx.scene.control.TextField();
         inputField.setStyle(
-            "-fx-font-size: 24px; " +
-            "-fx-alignment: center; " +
-            "-fx-border-color: black; " + 
-            "-fx-border-width: 2px; " +  
-            "-fx-border-radius: 5px; " +  
-            "-fx-padding: 5px;" +
-            "-fx-focus-color: transparent; " + // Remove blue focus color
-            "-fx-faint-focus-color: transparent;"         
-        );
+                "-fx-font-size: 24px; " +
+                        "-fx-alignment: center; " +
+                        "-fx-border-color: black; " +
+                        "-fx-border-width: 2px; " +
+                        "-fx-border-radius: 5px; " +
+                        "-fx-padding: 5px;" +
+                        "-fx-focus-color: transparent; " + // Remove blue focus color
+                        "-fx-faint-focus-color: transparent;");
         inputField.setLayoutX(250);
         inputField.setLayoutY(400);
         inputField.setPrefWidth(50);
@@ -263,11 +261,10 @@ public class Hangman extends Application {
         // Once the window is displayed, ensure focus on the input field
         Platform.runLater(() -> inputField.requestFocus());
 
-        
         // Restrict input to a single letter, auto-uppercase, and replace old value
         inputField.setOnKeyTyped(event -> {
             String input = event.getCharacter().toUpperCase();
-            
+
             if (!input.matches("[a-zA-Z]")) {
                 event.consume(); // Ignore invalid input
                 return;
@@ -289,9 +286,8 @@ public class Hangman extends Application {
             }
             return null; // Reject invalid input
         };
-        
+
         inputField.setTextFormatter(new TextFormatter<>(letterFilter));
-        
 
         // Make sure the text field is focused when the game starts
         inputField.requestFocus();
@@ -309,10 +305,12 @@ public class Hangman extends Application {
 
         root.getChildren().add(inputField);
 
-
-        Image defaultIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\default_icon.png");
-        Image hoverIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\hover_icon.png");
-        Image clickedIcon = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\clicked_icon.png");
+        Image defaultIcon = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\default_icon.png");
+        Image hoverIcon = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\hover_icon.png");
+        Image clickedIcon = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\clicked_icon.png");
 
         // Enter button with different state icons
 
@@ -321,16 +319,16 @@ public class Hangman extends Application {
         ImageView imageViewHover = new ImageView(hoverIcon);
         ImageView imageViewClicked = new ImageView(clickedIcon);
 
-        enterButton.setPrefHeight(60);  // Set height of the button
+        enterButton.setPrefHeight(60); // Set height of the button
 
         // Set the image to adjust its aspect ratio while maintaining the height
-        imageViewDefault.setFitHeight(60);      // Set the height of the ImageView to 50
+        imageViewDefault.setFitHeight(60); // Set the height of the ImageView to 50
         imageViewDefault.setPreserveRatio(true); // Keep the aspect ratio of the image
 
-        imageViewHover.setFitHeight(60);      // Set the height of the ImageView to 50
+        imageViewHover.setFitHeight(60); // Set the height of the ImageView to 50
         imageViewHover.setPreserveRatio(true);
 
-        imageViewClicked.setFitHeight(60);      // Set the height of the ImageView to 50
+        imageViewClicked.setFitHeight(60); // Set the height of the ImageView to 50
         imageViewClicked.setPreserveRatio(true);
 
         enterButton.setGraphic(imageViewDefault);
@@ -346,7 +344,8 @@ public class Hangman extends Application {
     }
 
     private Label createLetterLabel(char c) {
-        Image originalImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
+        Image originalImage = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + c + "_default.png");
 
         // Scale the image to fit the Label size
         ImageView imageView = new ImageView(originalImage);
@@ -362,19 +361,24 @@ public class Hangman extends Application {
 
     private void scaleHangmanImage(int incorrectGuesses) {
         // Get the size of the container (window size)
-        int panelWidth = (int) (hangmanImage.getParent().getLayoutBounds().getWidth() - 150);  // Add padding if necessary
-        int panelHeight = (int) (hangmanImage.getParent().getLayoutBounds().getHeight() - 200); // Adjust to leave space for other components
+        int panelWidth = (int) (hangmanImage.getParent().getLayoutBounds().getWidth() - 150); // Add padding if
+                                                                                              // necessary
+        int panelHeight = (int) (hangmanImage.getParent().getLayoutBounds().getHeight() - 200); // Adjust to leave space
+                                                                                                // for other components
 
         // Define max width and height constraints
         int maxWidth = 500;
         int maxHeight = 1000;
 
         // Make sure the width and height don't exceed the constraints
-        if (panelWidth > maxWidth) panelWidth = maxWidth;
-        if (panelHeight > maxHeight) panelHeight = maxHeight;
+        if (panelWidth > maxWidth)
+            panelWidth = maxWidth;
+        if (panelHeight > maxHeight)
+            panelHeight = maxHeight;
 
         // Get the image corresponding to the current incorrect guess
-        String imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources\\" + (incorrectGuesses + 1) + ".png";
+        String imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources\\"
+                + (incorrectGuesses + 1) + ".png";
         Image originalImage = new Image(imagePath);
 
         // Calculate scaling factor to maintain aspect ratio
@@ -405,45 +409,46 @@ public class Hangman extends Application {
             MusicPlayer impendingDoomPlayer = new MusicPlayer();
 
             char guessedLetter = input.charAt(0);
-            inputField.setText("");  // Clear the input field
+            inputField.setText(""); // Clear the input field
 
             // Load the image based on the correct or incorrect state
             String imagePath = "";
 
             if (wordChallenge[1].contains(String.valueOf(guessedLetter))) {
                 // Correct guess
-                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_correct.png";
+                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter
+                        + "_correct.png";
             } else {
                 // Incorrect guess
-                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter + "_incorrect.png";
+                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + guessedLetter
+                        + "_incorrect.png";
                 incorrectGuesses++;
-                if(score > 4){
+                if (score > 4) {
                     score = score - 5;
                 } else {
                     score = 0;
                 }
 
                 // Call the updated scale method for hangman image
-                scaleHangmanImage(incorrectGuesses);  // Scale based on number of incorrect guesses
+                scaleHangmanImage(incorrectGuesses); // Scale based on number of incorrect guesses
 
                 if (incorrectGuesses >= 5) {
-                // Start playing the impending doom sound in a loop
-                impendingDoomPlayer.playMusic(Constants.IMPEND);
-    }
-
-            if (incorrectGuesses >= 6) {
-                if (impendingDoomPlayer != null) {
-                    impendingDoomPlayer.stopMusic();
+                    // Start playing the impending doom sound in a loop
+                    impendingDoomPlayer.playMusic(Constants.IMPEND);
                 }
-            
-                musicPlayer.playSoundEffect(Constants.GAMEOVER);
-                
-                // Switch to the result screen
-                showResultScreen(false);  // false = game over
-                return;
-            }
-    
-    
+
+                if (incorrectGuesses >= 6) {
+                    if (impendingDoomPlayer != null) {
+                        impendingDoomPlayer.stopMusic();
+                    }
+
+                    musicPlayer.playSoundEffect(Constants.GAMEOVER);
+
+                    // Switch to the result screen
+                    showResultScreen(false); // false = game over
+                    return;
+                }
+
             }
 
             // Load and scale the icon
@@ -468,113 +473,114 @@ public class Hangman extends Application {
     }
 
     private void showResultScreen(boolean isWin) {
-    StackPane resultRoot = new StackPane();
-    Scene resultScene = new Scene(resultRoot, CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
+        StackPane resultRoot = new StackPane();
+        Scene resultScene = new Scene(resultRoot, CommonConstants.FRAME_SIZE.width, CommonConstants.FRAME_SIZE.height);
 
-    // Background Image
-    Image backgroundImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.png");
-    System.out.println("Image loaded: " + backgroundImage.getWidth() + "x" + backgroundImage.getHeight()); // Debugging
+        // Background Image
+        Image backgroundImage = new Image(
+                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.png");
+        System.out.println("Image loaded: " + backgroundImage.getWidth() + "x" + backgroundImage.getHeight()); // Debugging
 
-    BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-    resultRoot.setBackground(new Background(background));
-    
-    // Score Display
-    Label scoreTextLabel = new Label("Score: ");
-    scoreTextLabel.setStyle("-fx-font-size: 24px;");
-    scoreTextLabel.setTextFill(Color.BLACK);
-    scoreTextLabel.setAlignment(Pos.CENTER);
-    StackPane.setMargin(scoreTextLabel, new Insets(0, 0, 150, 50));
+        BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+        resultRoot.setBackground(new Background(background));
 
-    Label scoreValueLabel = new Label(String.valueOf(score + 30));
-    scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-    scoreValueLabel.setTextFill(Color.BLACK);
-    scoreValueLabel.setAlignment(Pos.CENTER);
-    StackPane.setMargin(scoreValueLabel, new Insets(0, 0, 150, 150));
+        // Score Display
+        Label scoreTextLabel = new Label("Score: ");
+        scoreTextLabel.setStyle("-fx-font-size: 24px;");
+        scoreTextLabel.setTextFill(Color.BLACK);
+        scoreTextLabel.setAlignment(Pos.CENTER);
+        StackPane.setMargin(scoreTextLabel, new Insets(0, 0, 150, 50));
 
-    // Images
-Image imgPlayAgain = new Image(Constants.PLAYAGAIN);
-Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
-Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
+        Label scoreValueLabel = new Label(String.valueOf(score + 30));
+        scoreValueLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        scoreValueLabel.setTextFill(Color.BLACK);
+        scoreValueLabel.setAlignment(Pos.CENTER);
+        StackPane.setMargin(scoreValueLabel, new Insets(0, 0, 150, 150));
 
-Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick, 
-        250, 100, 250, 60, Constants.CLICK, 
-        event -> {
-            primaryStage.close();
-            Hangman hangman = new Hangman(); 
-            Stage newStage = new Stage();
-            hangman.start(newStage);
-        });
+        // Images
+        Image imgPlayAgain = new Image(Constants.PLAYAGAIN);
+        Image imgPlayAgainHover = new Image(Constants.PLAYAGAIN_HOVER);
+        Image imgPlayAgainClick = new Image(Constants.PLAYAGAIN_CLICK);
 
-Image imgReturn = new Image(Constants.RETURN);
-Image imgReturnHover = new Image(Constants.RETURN_HOVER);
-Image imgReturnClick = new Image(Constants.RETURN_CLICK);
+        Button playAgainButton = createImageButton(imgPlayAgain, imgPlayAgainHover, imgPlayAgainClick,
+                250, 100, 250, 60, Constants.CLICK,
+                event -> {
+                    primaryStage.close();
+                    Hangman hangman = new Hangman();
+                    Stage newStage = new Stage();
+                    hangman.start(newStage);
+                });
 
-Button returnButton = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 
-        250, 100, 250, 60, Constants.CLICK, 
-        event -> {
-                GUI gui = new GUI();
-                gui.start(new Stage());
-                primaryStage.close();
-        });
+        Image imgReturn = new Image(Constants.RETURN);
+        Image imgReturnHover = new Image(Constants.RETURN_HOVER);
+        Image imgReturnClick = new Image(Constants.RETURN_CLICK);
 
-// Layout
-VBox layout = new VBox(15, playAgainButton, returnButton);
-layout.setAlignment(Pos.CENTER);
+        Button returnButton = createImageButton(imgReturn, imgReturnHover, imgReturnClick,
+                250, 100, 250, 60, Constants.CLICK,
+                event -> {
+                    GUI gui = new GUI();
+                    gui.start(new Stage());
+                    primaryStage.close();
+                });
 
-// Shift downward
-StackPane root = new StackPane(layout);
-StackPane.setMargin(layout, new Insets(145, 0, 0, 0)); // Adjust downward// Move it slightly downward
+        // Layout
+        VBox layout = new VBox(15, playAgainButton, returnButton);
+        layout.setAlignment(Pos.CENTER);
 
-    resultRoot.getChildren().add(layout);
+        // Shift downward
+        StackPane root = new StackPane(layout);
+        StackPane.setMargin(layout, new Insets(145, 0, 0, 0)); // Adjust downward// Move it slightly downward
 
+        resultRoot.getChildren().add(layout);
 
-    resultRoot.getChildren().add(scoreTextLabel);
-    resultRoot.getChildren().add(scoreValueLabel);
+        resultRoot.getChildren().add(scoreTextLabel);
+        resultRoot.getChildren().add(scoreValueLabel);
 
-    // Show Scene
-    primaryStage.setScene(resultScene);
-}
+        // Show Scene
+        primaryStage.setScene(resultScene);
+    }
 
-static MusicPlayer player = new MusicPlayer();
+    static MusicPlayer player = new MusicPlayer();
 
-private static void setButtonGraphic(Button button, Image image, double width, double height) {
-    ImageView imageView = new ImageView(image);
-    imageView.setFitWidth(width);
-    imageView.setFitHeight(height);
-    button.setGraphic(imageView);
-}
+    private static void setButtonGraphic(Button button, Image image, double width, double height) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        button.setGraphic(imageView);
+    }
 
-private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y, double width, double height, String soundPath, EventHandler<ActionEvent> action) {
-            Button button = new Button();
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(width);
-            imageView.setFitHeight(height);
-            button.setGraphic(imageView);
-            button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
-            button.setLayoutX(x);
-            button.setLayoutY(y);
-            button.setPrefWidth(width);
-            button.setPrefHeight(height);
-        
-            if (hoverImage != null && clickImage != null) {
-                button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
-                button.setOnMouseExited(event -> setButtonGraphic(button, image, width, height));
-                button.setOnMousePressed(event -> setButtonGraphic(button, clickImage, width, height));
-                button.setOnMouseReleased(event -> setButtonGraphic(button, image, width, height));
-            }
-        
-            if (action != null) {
-                button.setOnAction(event -> {
-                    if (soundPath != null && !soundPath.isEmpty()) {
-                        player.playSoundEffect(soundPath); // Play sound effect
+    private static Button createImageButton(Image image, Image hoverImage, Image clickImage, double x, double y,
+            double width, double height, String soundPath, EventHandler<ActionEvent> action) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        button.setGraphic(imageView);
+        button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        button.setLayoutX(x);
+        button.setLayoutY(y);
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        if (hoverImage != null && clickImage != null) {
+            button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
+            button.setOnMouseExited(event -> setButtonGraphic(button, image, width, height));
+            button.setOnMousePressed(event -> setButtonGraphic(button, clickImage, width, height));
+            button.setOnMouseReleased(event -> setButtonGraphic(button, image, width, height));
+        }
+
+        if (action != null) {
+            button.setOnAction(event -> {
+                if (soundPath != null && !soundPath.isEmpty()) {
+                    player.playSoundEffect(soundPath); // Play sound effect
                 }
                 action.handle(event);
             });
         }
-    
+
         return button;
-    }    
-    
+    }
 
     private void updateHiddenWord(char guessedLetter) {
         char[] hiddenWord = hiddenWordLabel.getText().toCharArray();
@@ -590,43 +596,44 @@ private static Button createImageButton(Image image, Image hoverImage, Image cli
         // Reload the word challenge
         wordChallenge = wordDB.loadChallenge();
         incorrectGuesses = 0;
-    
+
         secondsT = 0;
         timer1.playFromStart();
-    
+
         scaleHangmanImage(incorrectGuesses); // Apply scaling to the image
-    
+
         // Reset the hidden word
         hiddenWordLabel.setText(CustomTools.hideWords(wordChallenge[1]));
-    
+
         // Reset letter labels (back to default state)
         letterLabels.forEach((k, v) -> {
             // Reset the label with the default image and state
-            Image defaultImage = new Image("file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + k + "_default.png");
+            Image defaultImage = new Image(
+                    "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\Letters\\" + k + "_default.png");
             ImageView imageView = new ImageView(defaultImage);
             imageView.setFitWidth(50);
             imageView.setFitHeight(50);
             imageView.setPreserveRatio(true);
             v.setGraphic(imageView);
-    
+
             // Ensure label is interactive again
             v.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
         });
-    
+
         enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
-    
+
         // Optionally, clear the input field
         inputField.setText("");
     }
 
     public static void showHangmanScreen(Stage primaryStage) {
         // Dispose of the current Stage and create a new one for the Hangman game
-        
-        Hangman hangman = new Hangman(); 
+
+        Hangman hangman = new Hangman();
         hangman.start(new Stage());
-        
-        primaryStage.close();  // Close the current JavaFX stage
-    } 
+
+        primaryStage.close(); // Close the current JavaFX stage
+    }
 
     public static void main(String[] args) {
         launch(args);

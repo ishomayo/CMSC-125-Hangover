@@ -61,4 +61,9 @@ public class Constants {
     public final static String IMPEND = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\impendingDoom.wav";
     public final static String BGM = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\bgmusic.mp3";
     public final static String RESULTS = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\Result_Screen.jpg";
+
+    
+
+    
+    public final static String SELECT = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\SelectScreen.png";
 }
