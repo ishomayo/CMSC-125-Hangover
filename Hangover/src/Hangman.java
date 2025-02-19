@@ -51,9 +51,15 @@ public class Hangman extends Application {
     private TextField secondsLeft, scoreField;
     private int secondsT = 0;
     private Stage primaryStage;
-    private String category;
+    private static String category;
+
+    static MusicPlayer bgm = new MusicPlayer();
 
     public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Hangman(String category) {
         this.category = category;
     }
 
@@ -449,6 +455,8 @@ public class Hangman extends Application {
 
                     musicPlayer.playSoundEffect(Constants.GAMEOVER);
 
+                    bgm.stopMusic();
+
                     // Switch to the result screen
                     showResultScreen(false); // false = game over
                     return;
@@ -512,7 +520,7 @@ public class Hangman extends Application {
                 250, 100, 250, 60, Constants.CLICK,
                 event -> {
                     primaryStage.close();
-                    Hangman hangman = new Hangman();
+                    Hangman hangman = new Hangman(category);
                     Stage newStage = new Stage();
                     hangman.start(newStage);
                 });
@@ -599,6 +607,7 @@ public class Hangman extends Application {
 
     private void resetGame(Button enterButton) {
         // Reload the word challenge
+        
         wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
 
@@ -634,7 +643,7 @@ public class Hangman extends Application {
     public static void showHangmanScreen(Stage primaryStage) {
         // Dispose of the current Stage and create a new one for the Hangman game
 
-        Hangman hangman = new Hangman();
+        Hangman hangman = new Hangman(category);
         hangman.start(new Stage());
 
         primaryStage.close(); // Close the current JavaFX stage

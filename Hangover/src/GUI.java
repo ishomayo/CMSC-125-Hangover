@@ -370,13 +370,14 @@ public class GUI extends Application {
         Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
         Image imgReturnClick = new Image(Constants.IMG_RETURN_CLICK);
 
-        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, (1000 - 250) / 2, ((600 - 240) / 2) + 20,
+        Button buttonEasy = createImageButton(imgEasy, imgEasyHover, imgEasyClick, (1000 - 250) / 2,
+                ((600 - 240) / 2) + 20,
                 250, 60, Constants.CLICK, event -> showHangmanScreen(primaryStage, "easy"));
         Button buttonAverage = createImageButton(imgAverage, imgAverageHover, imgAverageClick, (1000 - 250) / 2,
                 ((600 - 60) / 2) + 20, 250, 60, Constants.CLICK, event -> showHangmanScreen(primaryStage, "average"));
         Button buttonDifficult = createImageButton(imgDifficult, imgDifficultHover, imgDifficultClick, (1000 - 250) / 2,
-                ((600 + 120) / 2) + 20, 250, 60, Constants.CLICK, event -> showHangmanScreen(primaryStage, "difficult"));
-
+                ((600 + 120) / 2) + 20, 250, 60, Constants.CLICK,
+                event -> showHangmanScreen(primaryStage, "difficult"));
 
         Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30,
                 Constants.CLICK, event -> fadeToLobby(primaryStage));
@@ -399,9 +400,9 @@ public class GUI extends Application {
     // Method to show the Hangman game screen
     public static void showHangmanScreen(Stage primaryStage, String category) {
         bgm.stopMusic();
-        Hangman hangman = new Hangman();
-        hangman.setCategory(category); // Pass the category to the Hangman class
+        Hangman hangman = new Hangman(category); // Pass category in constructor
         hangman.start(new Stage());
+
         primaryStage.close();
     }
 }
