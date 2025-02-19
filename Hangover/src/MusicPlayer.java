@@ -56,6 +56,11 @@ public class MusicPlayer extends GUI {
         }
     }
 
+    public boolean isPlaying() {
+        return backgroundPlayer != null && backgroundPlayer.getStatus() == MediaPlayer.Status.PLAYING;
+    }
+    
+
     // New method for playing short sound effects
     public void playSoundEffect(String filePath) {
         try {
@@ -76,5 +81,7 @@ public class MusicPlayer extends GUI {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 }

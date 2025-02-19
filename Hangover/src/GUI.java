@@ -28,6 +28,7 @@ import java.io.File;
 public class GUI extends Application {
 
     static MusicPlayer player = new MusicPlayer();
+    static MusicPlayer bgm = new MusicPlayer();
         
         public static void main(String[] args) {
             launch(args);
@@ -87,6 +88,9 @@ public class GUI extends Application {
         
         // Method to transition to the lobby screen
         private static void fadeToLobby(Stage primaryStage) {
+            if (!bgm.isPlaying()) { // Check if the music is already playing
+                bgm.playMusic(Constants.BGM);
+            }
             MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
             if (lobbyMediaPlayer == null) return;
     
@@ -302,6 +306,8 @@ public class GUI extends Application {
         Image imgExitHover = new Image(Constants.IMG_EXIT_HOVER);
         Image imgExitClick = new Image(Constants.IMG_EXIT_CLICK);
         Image imgMusic = new Image(Constants.IMG_MUSIC);
+        Image imgMusicOff = new Image(Constants.IMG_MUSIC_OFF);
+        Image imgMusicClick = new Image(Constants.IMG_MUSIC_CLICK);
         Image imgSFX = new Image(Constants.IMG_SFX);
 
         Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60, Constants.CLICK,
@@ -313,7 +319,15 @@ public class GUI extends Application {
         Button buttonExit = createImageButton(imgExit, imgExitHover, imgExitClick, 350, 400, 250, 60, Constants.CLICK,
             event -> Platform.exit());
             
-        Button buttonMusic = createImageButton(imgMusic, 870, 500, 30, 30);
+        Button buttonMusic = createImageButton(imgMusic, imgMusicClick, imgMusicOff, 870, 500, 30, 30, Constants.CLICK,
+            event -> {
+                if (bgm.isPlaying()) {
+                    bgm.pauseMusic();
+                } else {
+                    bgm.resumeMusic();
+                }
+            });
+
         Button buttonSFX = createImageButton(imgSFX, 920, 500, 30, 30);
 
         pane.getChildren().addAll(buttonStart, buttonHowTo, buttonCredits, buttonExit, buttonMusic, buttonSFX);
@@ -359,7 +373,7 @@ public class GUI extends Application {
     // Method to show the Hangman game screen
     public static void showHangmanScreen(Stage primaryStage) {
         // Dispose of the current Stage and create a new one for the Hangman game
-        
+        bgm.stopMusic();
         Hangman hangman = new Hangman(); 
         hangman.start(new Stage());
         

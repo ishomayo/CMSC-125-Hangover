@@ -22,6 +22,8 @@ public class Constants {
     public static final String IMG_EXIT_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-hover.png";
     public static final String IMG_EXIT_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/exit-click.png";
     public static final String IMG_MUSIC = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-on.png";
+    public static final String IMG_MUSIC_OFF = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-off.png";
+    public static final String IMG_MUSIC_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-click.png";
     public static final String IMG_SFX = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-on.png";
 
     // Select Category Buttons
@@ -47,4 +49,5 @@ public class Constants {
     public final static String CLICK = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\click_sound.wav";
     public final static String GAMEOVER = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\gameover.wav";
     public final static String IMPEND = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\impendingDoom.wav";
+    public final static String BGM = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\resources\\bgmusic.mp3";
 }

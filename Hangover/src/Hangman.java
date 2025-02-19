@@ -42,8 +42,6 @@ public class Hangman extends Application {
     private Button enterButton;
     private TextField secondsLeft, scoreField;
     private int secondsT = 0;
-    private Scene scene; // Add this at the class level
-
     private Stage primaryStage;
 
 
@@ -177,7 +175,7 @@ public class Hangman extends Application {
         hiddenWordLabel = new Label(CustomTools.hideWords(wordChallenge[1]));
         hiddenWordLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold;");
         hiddenWordLabel.setTextFill(Color.BLACK);
-        hiddenWordLabel.setLayoutX(200);
+        hiddenWordLabel.setLayoutX(150);
         hiddenWordLabel.setLayoutY(100);
         hiddenWordLabel.setPrefWidth(500);
         hiddenWordLabel.setPrefHeight(50);
@@ -372,7 +370,7 @@ public class Hangman extends Application {
         if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'Z') {
 
             MusicPlayer musicPlayer = new MusicPlayer();
-            MediaPlayer impendingDoomPlayer = null;
+            MusicPlayer impendingDoomPlayer = new MusicPlayer();
 
             char guessedLetter = input.charAt(0);
             inputField.setText("");  // Clear the input field
@@ -396,17 +394,14 @@ public class Hangman extends Application {
                 // Call the updated scale method for hangman image
                 scaleHangmanImage(incorrectGuesses);  // Scale based on number of incorrect guesses
 
-                if (incorrectGuesses >= 5 && impendingDoomPlayer == null) {
+                if (incorrectGuesses >= 5) {
                 // Start playing the impending doom sound in a loop
-                Media doomMedia = new Media(new File(Constants.IMPEND).toURI().toString());
-                impendingDoomPlayer = new MediaPlayer(doomMedia);
-                impendingDoomPlayer.setCycleCount(MediaPlayer.INDEFINITE);  // Looping
-                impendingDoomPlayer.play();
+                impendingDoomPlayer.playMusic(Constants.IMPEND);
     }
 
             if (incorrectGuesses >= 6) {
                 if (impendingDoomPlayer != null) {
-                    impendingDoomPlayer.stop();
+                    impendingDoomPlayer.stopMusic();
                 }
             
                 musicPlayer.playSoundEffect(Constants.GAMEOVER);
