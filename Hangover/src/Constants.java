@@ -47,6 +47,10 @@ public class Constants {
     public static final String RETURN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/144.png";
     public static final String RETURN_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/145.png";
 
+    public static final String HOME = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/1.png";
+    public static final String HOME_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/2.png";
+    public static final String HOME_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/Letters/3.png";
+
     // Return Button
     public static final String IMG_RETURN = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return.png";
     public static final String IMG_RETURN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-hover.png";

@@ -293,7 +293,7 @@ public class GUI extends Application {
 
         if (action != null) {
             button.setOnAction(event -> {
-                if (soundPath != null && !soundPath.isEmpty()) {
+                if (soundPath != null && !soundPath.isEmpty() && isSFXOn) {
                     player.playSoundEffect(soundPath); // Play sound effect
                 }
                 action.handle(event);
@@ -360,10 +360,8 @@ public class GUI extends Application {
         
         buttonSFX.setOnAction(event -> {
             if (isSFXOn) {
-                bgm.pauseMusic();
                 setButtonGraphic(buttonSFX, imgSFXOff, 30, 30); // Set to MusicOff when paused
             } else {
-                bgm.resumeMusic();
                 setButtonGraphic(buttonSFX, imgSFX, 30, 30); // Set to MusicOn when playing
             }
             isSFXOn = !isSFXOn;

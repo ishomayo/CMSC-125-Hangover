@@ -50,16 +50,16 @@ public class Hangman extends Application {
     private final WordDB wordDB = new WordDB();
     private HashMap<Character, Label> letterLabels;
     private javafx.scene.control.TextField inputField;
-    private Button enterButton;
+    private Button enterButton, buttonReturn;
     private int secondsT = 0;
     private Stage primaryStage;
     private static String category;
     private Font labelFont = Font.loadFont("file:" + Constants.FONT, 18);
     private Font valueFont = Font.loadFont("file:" + Constants.FONT, 28);
-    
+
     private Label hangmanImage, categoryLabel, hiddenWordLabel, scoreTextLabel, timerLabel;
     private Pane hiddenWordPane, letterPane1, letterPane2, letterPane3;
-    
+
     private TextField secondsLeft, scoreValue;
 
     static MusicPlayer bgm = new MusicPlayer();
@@ -214,11 +214,11 @@ public class Hangman extends Application {
         hiddenWordPane = new StackPane();
         hiddenWordPane.setPrefSize(500, 50);
         hiddenWordPane.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; " +
-                         "-fx-background-color: rgba(255, 255, 255, 0.5); " + // 50% opacity black background
-                         "-fx-text-fill: white; " + // Make text white
-                         "-fx-padding: 10px; " + // Padding for better visibility
-                         "-fx-border-color: black; " + // White outline
-                         "-fx-border-width: 2px;"); // Outline thickness
+                "-fx-background-color: rgba(255, 255, 255, 0.5); " + // 50% opacity black background
+                "-fx-text-fill: white; " + // Make text white
+                "-fx-padding: 10px; " + // Padding for better visibility
+                "-fx-border-color: black; " + // White outline
+                "-fx-border-width: 2px;"); // Outline thickness
         hiddenWordPane.setLayoutX(75);
         hiddenWordPane.setLayoutY(125);
         root.getChildren().add(hiddenWordPane);
@@ -426,6 +426,29 @@ public class Hangman extends Application {
         enterButton.setOnMouseReleased(event -> enterButton.setGraphic(imageViewDefault));
         enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
         root.getChildren().add(enterButton);
+
+        Image defaultIconHome = new Image(Constants.HOME);
+        Image hoverIconHome = new Image(Constants.HOME_HOVER);
+        Image clickedIconHome = new Image(Constants.HOME_CLICK);
+
+        ImageView imgHome = new ImageView(defaultIconHome);
+        ImageView imgHomeHover = new ImageView(hoverIconHome);
+        ImageView imgHomeClick = new ImageView(clickedIconHome);
+
+        Image imgReturn = new Image(Constants.HOME);
+        Image imgReturnHover = new Image(Constants.HOME_HOVER);
+        Image imgReturnClick = new Image(Constants.HOME_CLICK);
+
+        Button returnButton = createImageButton(imgReturn, imgReturnHover, imgReturnClick,
+                5, 10, 30, 30, Constants.CLICK,
+                event -> {
+                    GUI gui = new GUI();
+                    gui.start(new Stage());
+                    primaryStage.close();
+                });
+
+
+        root.getChildren().add(returnButton);
     }
 
     private Label createLetterLabel(char c) {
