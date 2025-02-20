@@ -427,14 +427,6 @@ public class Hangman extends Application {
         enterButton.setOnAction(event -> handleEnterButtonAction(enterButton));
         root.getChildren().add(enterButton);
 
-        Image defaultIconHome = new Image(Constants.HOME);
-        Image hoverIconHome = new Image(Constants.HOME_HOVER);
-        Image clickedIconHome = new Image(Constants.HOME_CLICK);
-
-        ImageView imgHome = new ImageView(defaultIconHome);
-        ImageView imgHomeHover = new ImageView(hoverIconHome);
-        ImageView imgHomeClick = new ImageView(clickedIconHome);
-
         Image imgReturn = new Image(Constants.HOME);
         Image imgReturnHover = new Image(Constants.HOME_HOVER);
         Image imgReturnClick = new Image(Constants.HOME_CLICK);
@@ -442,11 +434,11 @@ public class Hangman extends Application {
         Button returnButton = createImageButton(imgReturn, imgReturnHover, imgReturnClick,
                 5, 10, 30, 30, Constants.CLICK,
                 event -> {
+                    bgm.stopMusic();
                     GUI gui = new GUI();
                     gui.start(new Stage());
                     primaryStage.close();
                 });
-
 
         root.getChildren().add(returnButton);
     }
