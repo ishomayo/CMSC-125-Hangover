@@ -31,6 +31,9 @@ public class GUI extends Application {
     static MusicPlayer player = new MusicPlayer();
     static MusicPlayer bgm = new MusicPlayer();
 
+    private static boolean isMusicOn = true; // Initially true since music is playing by default
+    private static boolean isSFXOn = true; // Initially true since SFX is playing by default
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -89,9 +92,10 @@ public class GUI extends Application {
 
     // Method to transition to the lobby screen
     private static void fadeToLobby(Stage primaryStage) {
-        if (!bgm.isPlaying()) { // Check if the music is already playing
+        if (isMusicOn && !bgm.isPlaying()) { // Only play if music is ON
             bgm.playMusic(Constants.BGM);
         }
+
         MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
         if (lobbyMediaPlayer == null)
             return;
@@ -299,14 +303,6 @@ public class GUI extends Application {
         return button;
     }
 
-    // Method to set the graphic of a button
-    private static void setButtonGraphic(Button button, Image image, double width, double height) {
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(width);
-        imageView.setFitHeight(height);
-        button.setGraphic(imageView);
-    }
-
     // Method to add buttons to the lobby pane
     private static void addButtonsToPane(Pane pane, Stage primaryStage) {
         Image imgStart = new Image(Constants.IMG_START);
@@ -325,6 +321,8 @@ public class GUI extends Application {
         Image imgMusicOff = new Image(Constants.IMG_MUSIC_OFF);
         Image imgMusicClick = new Image(Constants.IMG_MUSIC_CLICK);
         Image imgSFX = new Image(Constants.IMG_SFX);
+        Image imgSFXOff = new Image(Constants.IMG_SFX_OFF);
+        Image imgSFXClick = new Image(Constants.IMG_SFX_CLICK);
 
         Button buttonStart = createImageButton(imgStart, imgStartHover, imgStartClick, 350, 220, 250, 60,
                 Constants.CLICK,
@@ -338,18 +336,145 @@ public class GUI extends Application {
         Button buttonExit = createImageButton(imgExit, imgExitHover, imgExitClick, 350, 400, 250, 60, Constants.CLICK,
                 event -> Platform.exit());
 
-        Button buttonMusic = createImageButton(imgMusic, imgMusicClick, imgMusicOff, 870, 500, 30, 30, Constants.CLICK,
+        Button buttonMusic = createMusicButton(imgMusic, imgMusicClick, imgMusicOff, 870, 500, 30, 30, Constants.CLICK,
                 event -> {
-                    if (bgm.isPlaying()) {
-                        bgm.pauseMusic();
-                    } else {
+                    if (isMusicOn) {
                         bgm.resumeMusic();
+                    } else {
+                        bgm.pauseMusic();
                     }
                 });
 
-        Button buttonSFX = createImageButton(imgSFX, 920, 500, 30, 30);
+        buttonMusic.setOnAction(event -> {
+            if (isMusicOn) {
+                bgm.pauseMusic();
+                setButtonGraphic(buttonMusic, imgMusicOff, 30, 30); // Set to MusicOff when paused
+            } else {
+                bgm.resumeMusic();
+                setButtonGraphic(buttonMusic, imgMusic, 30, 30); // Set to MusicOn when playing
+            }
+            isMusicOn = !isMusicOn;
+        }); 
+
+        Button buttonSFX = createSFXButton(imgSFX, imgSFXClick, imgSFXOff, 920, 500, 30, 30, Constants.CLICK, null);
+        
+        buttonSFX.setOnAction(event -> {
+            if (isSFXOn) {
+                bgm.pauseMusic();
+                setButtonGraphic(buttonSFX, imgSFXOff, 30, 30); // Set to MusicOff when paused
+            } else {
+                bgm.resumeMusic();
+                setButtonGraphic(buttonSFX, imgSFX, 30, 30); // Set to MusicOn when playing
+            }
+            isSFXOn = !isSFXOn;
+        });
 
         pane.getChildren().addAll(buttonStart, buttonHowTo, buttonCredits, buttonExit, buttonMusic, buttonSFX);
+    }
+
+    private static Button createMusicButton(Image image, Image hoverImage, Image clickImage, double x, double y,
+            double width, double height, String soundPath, EventHandler<ActionEvent> action) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+
+        button.setGraphic(imageView);
+        button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        button.setLayoutX(x);
+        button.setLayoutY(y);
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
+
+        button.setOnMouseExited(event -> {
+            // Return to the correct state (MusicOn or MusicOff) when not hovered
+            setButtonGraphic(button, isMusicOn ? image : clickImage, width, height);
+        });
+
+        button.setOnMouseExited(event -> {
+            // Return to the correct state (MusicOn or MusicOff) when not hovered
+            setButtonGraphic(button, isMusicOn ? image : clickImage, width, height);
+        });
+
+        if (action != null) {
+            button.setOnAction(event -> {
+                // Play sound effect safely
+                if (soundPath != null && !soundPath.isEmpty()) {
+                    Platform.runLater(() -> player.playSoundEffect(soundPath));
+                }
+
+                // Toggle music on/off
+                isMusicOn = !isMusicOn;
+                if (isMusicOn) {
+                    bgm.resumeMusic();
+                    setButtonGraphic(button, image, width, height); // Set to MusicOn
+                } else {
+                    bgm.pauseMusic();
+                    setButtonGraphic(button, clickImage, width, height); // Set to MusicOff
+                }
+
+                // Handle additional action if provided
+                action.handle(event);
+            });
+        }
+        return button;
+    }
+
+    private static Button createSFXButton(Image image, Image hoverImage, Image clickImage, double x, double y,
+            double width, double height, String soundPath, EventHandler<ActionEvent> action) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+
+        button.setGraphic(imageView);
+        button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+        button.setLayoutX(x);
+        button.setLayoutY(y);
+        button.setPrefWidth(width);
+        button.setPrefHeight(height);
+
+        button.setOnMouseEntered(event -> setButtonGraphic(button, hoverImage, width, height));
+
+        button.setOnMouseExited(event -> {
+            // Return to the correct state (MusicOn or MusicOff) when not hovered
+            setButtonGraphic(button, isSFXOn ? image : clickImage, width, height);
+        });
+
+        button.setOnMouseExited(event -> {
+            // Return to the correct state (MusicOn or MusicOff) when not hovered
+            setButtonGraphic(button, isSFXOn ? image : clickImage, width, height);
+        });
+
+        if (action != null) {
+            button.setOnAction(event -> {
+                if (soundPath != null && !soundPath.isEmpty()) {
+                    player.playSoundEffect(soundPath);
+                }
+                action.handle(event);
+
+                // Toggle music state
+                isSFXOn = !isSFXOn;
+
+                // Set button graphic based on new state
+                if (isSFXOn) {
+                    setButtonGraphic(button, image, width, height); // MusicOn
+                } else {
+                    setButtonGraphic(button, clickImage, width, height); // MusicOff
+                }
+            });
+        }
+        return button;
+    }
+
+    // Method to set the graphic of a button
+    private static void setButtonGraphic(Button button, Image image, double width, double height) {
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(width);
+        imageView.setFitHeight(height);
+        button.setGraphic(imageView);
     }
 
     // Method to add category buttons to the pane

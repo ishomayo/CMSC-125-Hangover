@@ -25,6 +25,8 @@ public class Constants {
     public static final String IMG_MUSIC_OFF = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-off.png";
     public static final String IMG_MUSIC_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/music-click.png";
     public static final String IMG_SFX = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-on.png";
+    public static final String IMG_SFX_OFF = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-off.png";
+    public static final String IMG_SFX_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/sfx-click.png";
 
     // Select Category Buttons
     public static final String IMG_EASY = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/easy.png";
@@ -50,6 +52,11 @@ public class Constants {
     public static final String IMG_RETURN_HOVER = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-hover.png";
     public static final String IMG_RETURN_CLICK = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/return-click.png";
 
+    public final static String FONT = "C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\src\\resources\\Saved-by-Zero-Rg.ttf";
+ 
+    
+
+    public static final String IN_GAME_SCREEN = "D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\resources\\InGame_Screen.jpg";
     // How to Play and Credits Screens
     public static final String IMG_HOW_TO_PLAY = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/HowToPlay.png";
     public static final String IMG_CREDITS_SCREEN = "file:/D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/CreditsScreen.png";

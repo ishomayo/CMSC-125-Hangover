@@ -17,14 +17,18 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 // import javafx.scene.text.Font;
 import javafx.stage.Stage;
 // import javafx.stage.StageStyle;
@@ -44,14 +48,19 @@ public class Hangman extends Application {
     private int score = 0;
     private String[] wordChallenge;
     private final WordDB wordDB = new WordDB();
-    private Label hangmanImage, categoryLabel, hiddenWordLabel, scoreLabel, timerLabel;
     private HashMap<Character, Label> letterLabels;
     private javafx.scene.control.TextField inputField;
     private Button enterButton;
-    private TextField secondsLeft, scoreField;
     private int secondsT = 0;
     private Stage primaryStage;
     private static String category;
+    private Font labelFont = Font.loadFont("file:" + Constants.FONT, 18);
+    private Font valueFont = Font.loadFont("file:" + Constants.FONT, 28);
+    
+    private Label hangmanImage, categoryLabel, hiddenWordLabel, scoreTextLabel, timerLabel;
+    private Pane hiddenWordPane, letterPane1, letterPane2, letterPane3;
+    
+    private TextField secondsLeft, scoreValue;
 
     static MusicPlayer bgm = new MusicPlayer();
 
@@ -125,6 +134,7 @@ public class Hangman extends Application {
         if (!bgm.isPlaying()) { // Check if the music is already playing
             bgm.playMusic(Constants.INGAMEBGM);
         }
+
         // Hangman image
         hangmanImage = new Label();
         ImageView hangmanImageView = new ImageView(new Image(CommonConstants.IMAGE_PATH));
@@ -138,123 +148,188 @@ public class Hangman extends Application {
 
         scaleHangmanImage(incorrectGuesses);
 
-        // Score label
-        scoreLabel = new Label("Score: ");
-        scoreLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-        scoreLabel.setTextFill(Color.BLACK);
-        scoreLabel.setLayoutX(765);
-        scoreLabel.setLayoutY(53);
-        scoreLabel.setPrefWidth(200);
-        scoreLabel.setPrefHeight(30);
-        root.getChildren().add(scoreLabel);
+        // Label for "Score:"
+        scoreTextLabel = new Label("Score:");
+        scoreTextLabel.setFont(labelFont);
+        scoreTextLabel.setStyle("-fx-text-fill: BLACK;");
+        scoreTextLabel.setLayoutX(735);
+        scoreTextLabel.setLayoutY(53);
+        scoreTextLabel.setPrefWidth(100);
+        scoreTextLabel.setPrefHeight(30);
+        root.getChildren().add(scoreTextLabel);
 
-        scoreField = new TextField();
-        scoreField.setText(String.valueOf(score));
-        scoreField.setEditable(false);
-        scoreField.setStyle(
-                "-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
-        scoreField.setLayoutX(840);
-        scoreField.setLayoutY(46);
-        scoreField.setPrefWidth(60);
-        scoreField.setPrefHeight(30);
-        root.getChildren().add(scoreField);
+        String scoreStyle = "-fx-font-size: 24px; -fx-background-color: transparent; -fx-font-weight: bold; -fx-text-fill: BLACK;";
+
+        // Label for the score value
+        scoreValue = new TextField();
+        scoreValue.setStyle("-fx-font-family: '" + valueFont.getFamily() + "'; " + scoreStyle);
+        scoreValue.setText(String.valueOf(score));
+        scoreValue.setEditable(false);
+        scoreValue.setAlignment(Pos.CENTER);
+        scoreValue.setLayoutX(820);
+        scoreValue.setLayoutY(45);
+        scoreValue.setPrefWidth(110);
+        scoreValue.setFocusTraversable(false);
+        root.getChildren().add(scoreValue);
 
         timer1.setCycleCount(javafx.animation.Animation.INDEFINITE);
 
-        // Timer label
         timer1.play();
-        timerLabel = new Label("Time: ");
-        timerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-        timerLabel.setTextFill(Color.BLACK);
-        timerLabel.setLayoutX(400);
-        timerLabel.setLayoutY(50);
-        timerLabel.setPrefWidth(200);
+
+        // Label for "Time:"
+        timerLabel = new Label("Time:");
+        timerLabel.setFont(labelFont);
+        timerLabel.setStyle("-fx-text-fill: RED;");
+        timerLabel.setLayoutX(455);
+        timerLabel.setLayoutY(55);
+        timerLabel.setPrefWidth(100);
         timerLabel.setPrefHeight(30);
         root.getChildren().add(timerLabel);
 
+        String timeStyle = "-fx-font-size: 20px; -fx-background-color: transparent; -fx-font-weight: bold; -fx-text-fill: RED;";
+
+        // Label for the seconds left
         secondsLeft = new TextField();
+        secondsLeft.setStyle("-fx-font-family: '" + valueFont.getFamily() + "'; " + timeStyle);
+        secondsLeft.setText("555");
         secondsLeft.setEditable(false);
-        secondsLeft.setStyle(
-                "-fx-font-size: 24px; -fx-font-weight: bold; -fx-background-color: transparent; -fx-text-fill: black;");
-        secondsLeft.setLayoutX(470);
-        secondsLeft.setLayoutY(40);
-        secondsLeft.setPrefWidth(60);
-        secondsLeft.setPrefHeight(30);
+        secondsLeft.setAlignment(Pos.CENTER);
+        secondsLeft.setLayoutX(515);
+        secondsLeft.setLayoutY(50);
+        secondsLeft.setPrefWidth(80);
+        secondsLeft.setFocusTraversable(false);
         root.getChildren().add(secondsLeft);
 
         // Category label
-        categoryLabel = new Label("Category: " + wordChallenge[0]);
-        categoryLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        categoryLabel = new Label(wordChallenge[0]);
+        categoryLabel.setFont(labelFont);
         categoryLabel.setTextFill(Color.BLACK);
-        categoryLabel.setLayoutX(60);
-        categoryLabel.setLayoutY(50);
+        categoryLabel.setLayoutX(65);
+        categoryLabel.setLayoutY(55);
         categoryLabel.setPrefWidth(400);
         categoryLabel.setPrefHeight(30);
         root.getChildren().add(categoryLabel);
 
+        // Hidden word pane (StackPane centers its children automatically)
+        hiddenWordPane = new StackPane();
+        hiddenWordPane.setPrefSize(500, 50);
+        hiddenWordPane.setStyle("-fx-font-size: 40px; -fx-font-weight: bold; " +
+                         "-fx-background-color: rgba(255, 255, 255, 0.5); " + // 50% opacity black background
+                         "-fx-text-fill: white; " + // Make text white
+                         "-fx-padding: 10px; " + // Padding for better visibility
+                         "-fx-border-color: black; " + // White outline
+                         "-fx-border-width: 2px;"); // Outline thickness
+        hiddenWordPane.setLayoutX(75);
+        hiddenWordPane.setLayoutY(125);
+        root.getChildren().add(hiddenWordPane);
+
         // Hidden word label
         hiddenWordLabel = new Label(CustomTools.hideWords(wordChallenge[1]));
-        hiddenWordLabel.setStyle("-fx-font-size: 40px; -fx-font-weight: bold;");
+        hiddenWordLabel.setStyle("-fx-font-size: 35px; -fx-font-weight: bold;");
         hiddenWordLabel.setTextFill(Color.BLACK);
-        hiddenWordLabel.setLayoutX(150);
-        hiddenWordLabel.setLayoutY(100);
-        hiddenWordLabel.setPrefWidth(500);
-        hiddenWordLabel.setPrefHeight(50);
-        root.getChildren().add(hiddenWordLabel);
+
+        // Automatically center label inside the pane
+        hiddenWordPane.getChildren().add(hiddenWordLabel);
+
+        // Create the StackPane for letterPanelA_I
+        letterPane1 = new StackPane();
+        letterPane1.setPrefSize(400, 50);
+        letterPane1.setStyle("-fx-background-color: transparent;");
+        letterPane1.setLayoutX(80); // Position of the StackPane
+        letterPane1.setLayoutY(240); // Position of the StackPane
+        root.getChildren().add(letterPane1);
 
         // Letter panel for displaying letter icons A - I
         GridPane letterPanelA_I = new GridPane();
-        letterPanelA_I.setLayoutX(50);
-        letterPanelA_I.setLayoutY(200);
-        letterPanelA_I.setHgap(5);
-        letterPanelA_I.setVgap(5);
-        letterPanelA_I.setPrefWidth(400);
-        letterPanelA_I.setPrefHeight(400);
+        letterPanelA_I.setHgap(5); // Horizontal gap between columns
+        letterPanelA_I.setVgap(5); // Optional vertical gap between rows (if needed)
         letterPanelA_I.setStyle("-fx-background-color: transparent;");
 
-        // Loop through each letter from A to I
-        for (char c = 'A'; c <= 'J'; c++) {
-            Label letterLabel = createLetterLabel(c);
-            letterPanelA_I.add(letterLabel, c - 'A', 0);
+        // Set the preferred width and allow dynamic resizing of columns
+        int cols = 9; // Number of columns (for A - I)
+        for (int i = 0; i < cols; i++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setPercentWidth(100.0 / cols); // Divide width equally
+            columnConstraints.setHgrow(Priority.ALWAYS); // Allow columns to grow
+            letterPanelA_I.getColumnConstraints().add(columnConstraints);
         }
-        root.getChildren().add(letterPanelA_I);
 
-        // Letter panel for displaying letter icons J - S
-        GridPane letterPanelJ_S = new GridPane();
-        letterPanelJ_S.setLayoutX(50);
-        letterPanelJ_S.setLayoutY(250);
-        letterPanelJ_S.setHgap(5);
-        letterPanelJ_S.setVgap(5);
-        letterPanelJ_S.setPrefWidth(400);
-        letterPanelJ_S.setPrefHeight(400);
-        letterPanelJ_S.setStyle("-fx-background-color: transparent;");
-
-        // Loop through each letter from J to S
-        for (char c = 'K'; c <= 'T'; c++) {
-            Label letterLabel = createLetterLabel(c);
-            letterPanelJ_S.add(letterLabel, c - 'K', 0);
+        // Add labels for letters A - I
+        for (char c = 'A'; c <= 'I'; c++) { // Loop from 'A' to 'I'
+            Label letterLabel = createLetterLabel(c); // Assuming you have a method that creates the label
+            letterPanelA_I.add(letterLabel, c - 'A', 0); // Position labels in each column
         }
-        root.getChildren().add(letterPanelJ_S);
 
-        // Letter panel for displaying letter icons T - Z
-        GridPane letterPanelT_Z = new GridPane();
-        letterPanelT_Z.setLayoutX(150);
-        letterPanelT_Z.setLayoutY(300);
-        letterPanelT_Z.setHgap(10);
-        letterPanelT_Z.setVgap(10);
-        letterPanelT_Z.setPrefWidth(400);
-        letterPanelT_Z.setPrefHeight(400);
-        letterPanelT_Z.setStyle("-fx-background-color: transparent;");
+        // Add the GridPane to the StackPane
+        letterPane1.getChildren().add(letterPanelA_I);
 
-        // Loop through each letter from T to Z
-        for (char c = 'U'; c <= 'Z'; c++) {
-            Label letterLabel = createLetterLabel(c);
-            letterPanelT_Z.add(letterLabel, c - 'U', 0);
+        // Create the StackPane for letterPanelJ_R
+        letterPane2 = new StackPane();
+        letterPane2.setPrefSize(400, 50);
+        letterPane2.setStyle("-fx-background-color: transparent;");
+        letterPane2.setLayoutX(75); // Position of the StackPane
+        letterPane2.setLayoutY(300); // Position of the StackPane
+        root.getChildren().add(letterPane2);
+
+        // Letter panel for displaying letter icons J - R
+        GridPane letterPanelJ_R = new GridPane();
+        letterPanelJ_R.setHgap(5); // Horizontal gap between columns
+        letterPanelJ_R.setVgap(5); // Optional vertical gap between rows (if needed)
+        letterPanelJ_R.setStyle("-fx-background-color: transparent;");
+
+        // Set the preferred width and allow dynamic resizing of columns
+        cols = 9; // Number of columns (for J - R)
+        for (int i = 0; i < cols; i++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setPercentWidth(100.0 / cols); // Divide width equally
+            columnConstraints.setHgrow(Priority.ALWAYS); // Allow columns to grow
+            letterPanelJ_R.getColumnConstraints().add(columnConstraints);
         }
-        root.getChildren().add(letterPanelT_Z);
+
+        // Add labels for letters J - R
+        for (char c = 'J'; c <= 'R'; c++) { // Loop from 'J' to 'R'
+            Label letterLabel = createLetterLabel(c); // Assuming you have a method that creates the label
+            letterPanelJ_R.add(letterLabel, c - 'J', 0); // Position labels in each column
+        }
+
+        // Add the GridPane to the StackPane
+        letterPane2.getChildren().add(letterPanelJ_R);
+
+        // Create the StackPane for letterPanelS_Z
+        letterPane3 = new StackPane();
+        letterPane3.setPrefSize(350, 50);
+        letterPane3.setStyle("-fx-background-color: transparent;");
+        letterPane3.setLayoutX(85); // Position of the StackPane
+        letterPane3.setLayoutY(360); // Position of the StackPane
+        root.getChildren().add(letterPane3);
+
+        // Letter panel for displaying letter icons S - Z
+        GridPane letterPanelS_Z = new GridPane();
+        letterPanelS_Z.setHgap(10); // Horizontal gap between columns
+        letterPanelS_Z.setVgap(10); // Optional vertical gap between rows (if needed)
+        letterPanelS_Z.setStyle("-fx-background-color: transparent;");
+
+        // Set the preferred width and allow dynamic resizing of columns
+        cols = 8; // Number of columns (for S - Z)
+        for (int i = 0; i < cols; i++) {
+            ColumnConstraints columnConstraints = new ColumnConstraints();
+            columnConstraints.setPercentWidth(100.0 / cols); // Divide width equally
+            columnConstraints.setHgrow(Priority.ALWAYS); // Allow columns to grow
+            letterPanelS_Z.getColumnConstraints().add(columnConstraints);
+        }
+
+        // Add labels for letters S - Z
+        for (char c = 'S'; c <= 'Z'; c++) { // Loop from 'S' to 'Z'
+            Label letterLabel = createLetterLabel(c); // Assuming you have a method that creates the label
+            letterPanelS_Z.add(letterLabel, c - 'S', 0); // Position labels in each column
+        }
+
+        // Add the GridPane to the StackPane
+        letterPane3.getChildren().add(letterPanelS_Z);
 
         // Input field for letter guesses
         inputField = new javafx.scene.control.TextField();
+        inputField.setStyle("-fx-font-size: 24px; -fx-alignment: center;");
         inputField.setStyle(
                 "-fx-font-size: 24px; " +
                         "-fx-alignment: center; " +
@@ -265,35 +340,31 @@ public class Hangman extends Application {
                         "-fx-focus-color: transparent; " + // Remove blue focus color
                         "-fx-faint-focus-color: transparent;");
         inputField.setLayoutX(250);
-        inputField.setLayoutY(400);
+        inputField.setLayoutY(450);
         inputField.setPrefWidth(50);
         inputField.setPrefHeight(50);
-
-        inputField.setLayoutX(250);
-        inputField.setLayoutY(400);
 
         // Once the window is displayed, ensure focus on the input field
         Platform.runLater(() -> inputField.requestFocus());
 
+        // UPDATED
         // Restrict input to a single letter, auto-uppercase, and replace old value
         inputField.setOnKeyTyped(event -> {
-            String input = event.getCharacter().toUpperCase();
+            String input = inputField.getText().toUpperCase(); // Convert the entire text to uppercase
 
-            if (!input.matches("[a-zA-Z]")) {
-                event.consume(); // Ignore invalid input
+            if (!input.matches("[a-zA-Z]")) { // Allow only a single uppercase letter
+                inputField.clear(); // Clear invalid input
                 return;
             }
 
-            inputField.setText(input); // Always replace with the new character
+            inputField.setText(input); // Set uppercase text
 
             inputField.positionCaret(1);
-
-            event.consume();
+            event.consume(); // Consume the event to prevent further processing
         });
 
         UnaryOperator<TextFormatter.Change> letterFilter = change -> {
             String newText = change.getControlNewText().toUpperCase();
-
             // Allow only a single uppercase letter (A-Z)
             if (newText.matches("[A-Z]?")) {
                 return change;
@@ -333,21 +404,21 @@ public class Hangman extends Application {
         ImageView imageViewHover = new ImageView(hoverIcon);
         ImageView imageViewClicked = new ImageView(clickedIcon);
 
-        enterButton.setPrefHeight(60); // Set height of the button
+        enterButton.setPrefHeight(30); // Set height of the button
 
         // Set the image to adjust its aspect ratio while maintaining the height
-        imageViewDefault.setFitHeight(60); // Set the height of the ImageView to 50
+        imageViewDefault.setFitHeight(30); // Set the height of the ImageView to 50
         imageViewDefault.setPreserveRatio(true); // Keep the aspect ratio of the image
 
-        imageViewHover.setFitHeight(60); // Set the height of the ImageView to 50
+        imageViewHover.setFitHeight(30); // Set the height of the ImageView to 50
         imageViewHover.setPreserveRatio(true);
 
-        imageViewClicked.setFitHeight(60); // Set the height of the ImageView to 50
+        imageViewClicked.setFitHeight(30); // Set the height of the ImageView to 50
         imageViewClicked.setPreserveRatio(true);
 
         enterButton.setGraphic(imageViewDefault);
         enterButton.setLayoutX(300);
-        enterButton.setLayoutY(395);
+        enterButton.setLayoutY(455);
         enterButton.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
         enterButton.setOnMouseEntered(event -> enterButton.setGraphic(imageViewHover));
         enterButton.setOnMouseExited(event -> enterButton.setGraphic(imageViewDefault));
@@ -482,7 +553,7 @@ public class Hangman extends Application {
                 } else {
                     score = score + (60 - secondsT);
                 }
-                scoreField.setText(String.valueOf(score));
+                scoreValue.setText(String.valueOf(score));
                 resetGame(enterButton);
             }
         }
@@ -500,6 +571,14 @@ public class Hangman extends Application {
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         resultRoot.setBackground(new Background(background));
+
+        Label wordRevealLabel = new Label();
+
+        wordRevealLabel.setText("The word was: " + wordChallenge[1]);
+        wordRevealLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+        wordRevealLabel.setTextFill(Color.RED);
+        wordRevealLabel.setAlignment(Pos.CENTER);
+        StackPane.setMargin(wordRevealLabel, new Insets(400, 0, 0, 0));
 
         // Score Display
         Label scoreTextLabel = new Label("Score: ");
@@ -552,6 +631,8 @@ public class Hangman extends Application {
 
         resultRoot.getChildren().add(scoreTextLabel);
         resultRoot.getChildren().add(scoreValueLabel);
+
+        resultRoot.getChildren().add(wordRevealLabel);
 
         // Show Scene
         primaryStage.setScene(resultScene);
@@ -611,7 +692,7 @@ public class Hangman extends Application {
     private void resetGame(Button enterButton) {
         // Reload the word challenge
         bgm.stopMusic();
-        
+
         wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
 
