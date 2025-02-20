@@ -706,7 +706,7 @@ public class Hangman extends Application {
 
     private void resetGame(Button enterButton) {
         // Reload the word challenge
-        bgm.stopMusic();
+        
 
         wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
