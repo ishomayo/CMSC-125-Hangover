@@ -25,7 +25,7 @@ Run the following command in the terminal to check your Java version:
 ```sh
 java -version
 ```
-Expected output:<br/>
+#### Expected output:<br/>
 ```
 java version "21.0.2" 2024-01-16 LTS<br/>
 Java(TM) SE Runtime Environment (build 21.0.2+13-LTS)
