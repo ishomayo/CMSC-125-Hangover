@@ -1,61 +1,54 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.io.*;
+import java.net.URL;
+import java.util.*;
 
 public class WordDB {
     // will contain key -> category, value -> words
     private HashMap<String, String[]> wordList;
+    private ArrayList<String> categories; // used to pick random categories
+    private static final String DATA_PATH = "resources/data.txt"; // Adjust path if needed
 
-    // used to pick random categories (can't randomly get index with HashMap)
-    private ArrayList<String> categories;
-
-    public WordDB(){
-        try{
+    public WordDB() {
+        try {
             wordList = new HashMap<>();
             categories = new ArrayList<>();
 
-            // get file path
-            String filePath = getClass().getClassLoader().getResource(CommonConstants.DATA_PATH).getPath();
-            if(filePath.contains("%20")) filePath = filePath.replaceAll("%20", " ");
-            try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                // iterates through each line in the data.txt
-                String line;
-                while((line = reader.readLine()) != null){
-                    // split the data by ","
-                    String[] parts = line.split(",");
+            // Load the file from inside the JAR/EXE
+            InputStream input = getClass().getClassLoader().getResourceAsStream(DATA_PATH);
+            if (input == null) {
+                throw new RuntimeException("❌ ERROR: data.txt NOT FOUND!");
+            }
 
-                    // the first word of each line represents the category
+            // Debugging: Check if file exists
+            URL resourceUrl = getClass().getClassLoader().getResource(DATA_PATH);
+            System.out.println("🔍 File URL: " + (resourceUrl == null ? "NOT FOUND" : resourceUrl));
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
                     String category = parts[0];
                     categories.add(category);
 
-                    // the rest of the values from parts will be the words relative to the category
-                    String values[] = Arrays.copyOfRange(parts, 1, parts.length);
+                    String[] values = Arrays.copyOfRange(parts, 1, parts.length);
                     wordList.put(category, values);
                 }
             }
-        }catch(IOException e){
-            System.out.println("Error: " + e);
+        } catch (IOException e) {
+            System.err.println("❌ ERROR: " + e.getMessage());
         }
     }
 
     public String[] loadChallenge(String chosenCategory) {
         Random rand = new Random();
-
-        // Use the chosenCategory instead of generating a random category
         String category = chosenCategory;
 
-        // Generate random number to choose the value from category
         String[] categoryValues = wordList.get(category);
         if (categoryValues == null) {
             throw new IllegalArgumentException("Category not found: " + category);
         }
         String word = categoryValues[rand.nextInt(categoryValues.length)];
 
-        // [0] -> category and [1] -> word
         return new String[]{category.toUpperCase(), word.toUpperCase()};
     }
 }

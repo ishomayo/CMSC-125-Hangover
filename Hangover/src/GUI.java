@@ -1,5 +1,4 @@
 
-// import javafx.animation.FadeTransition;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -16,8 +15,8 @@ import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-// import javafx.stage.StageStyle;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.event.ActionEvent;
 import javafx.util.Duration;
 
@@ -34,12 +33,18 @@ public class GUI extends Application {
     private static boolean isMusicOn = true; // Initially true since music is playing by default
     private static boolean isSFXOn = true; // Initially true since SFX is playing by default
 
+    private static boolean splashPlayed = false; // Flag to track splash screen state
+
+    // private static Stage primaryStage;
+
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) {
+        // GUI.primaryStage = primaryStage; // Store the primary stage
+
         primaryStage.setTitle("Hangman Game");
         primaryStage.setWidth(Constants.FRAME_SIZE.width);
         primaryStage.setHeight(Constants.FRAME_SIZE.height);
@@ -73,8 +78,18 @@ public class GUI extends Application {
         return mediaView;
     }
 
-    // Method to initialize JavaFX components
     private static void initFX(JFXPanel jfxPanel, Stage primaryStage) {
+        if (splashPlayed) {
+            // If splash has already played, go directly to the lobby
+            fadeToLobby(primaryStage);
+        } else {
+            // Play splash only once
+            splashPlayed = true;
+            playSplashScreen(primaryStage);
+        }
+    }
+
+    private static void playSplashScreen(Stage primaryStage) {
         MediaPlayer splashMediaPlayer = createMediaPlayer(Constants.SPLASH_VIDEO_PATH, true, 1);
         if (splashMediaPlayer == null)
             return;
@@ -90,8 +105,12 @@ public class GUI extends Application {
         splashMediaPlayer.setOnEndOfMedia(() -> Platform.runLater(() -> fadeToLobby(primaryStage)));
     }
 
-    // Method to transition to the lobby screen
-    private static void fadeToLobby(Stage primaryStage) {
+    public static void fadeToLobby(Stage primaryStage) {
+        if (primaryStage == null) {
+            System.err.println("Error: Primary stage is null.");
+            return;
+        }
+
         if (isMusicOn && !bgm.isPlaying()) { // Only play if music is ON
             bgm.playMusic(Constants.BGM);
         }
@@ -109,7 +128,6 @@ public class GUI extends Application {
         addButtonsToPane(lobbyPane, primaryStage);
 
         Scene lobbyScene = new Scene(lobbyPane, Color.BLACK);
-        // New code with fade transition
         applyFadeTransition1(primaryStage, lobbyScene);
     }
 
@@ -199,7 +217,7 @@ public class GUI extends Application {
         difficultyImageView.setLayoutY(50); // Offset from the top
 
         // New image in the center of the screen
-        Image centerImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/SelectScreen.png");
+        Image centerImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/src/resources1/SelectScreen.png");
         ImageView centerImageView = new ImageView(centerImage);
         centerImageView.setPreserveRatio(true);
         centerImageView.setFitWidth(900); // Adjust as needed
@@ -215,18 +233,14 @@ public class GUI extends Application {
         applyFadeTransition(primaryStage, categoryScene);
     }
 
-    // Method to show the "How to Play" screen
     private static void showHowToPlayScreen(Stage primaryStage) {
         MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
         if (lobbyMediaPlayer == null)
             return;
 
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
-        Pane howToPane = new Pane(lobbyMediaView);
 
-        ImageView howToPlayImageView = createImageView(Constants.IMG_HOW_TO_PLAY, 800, 550, true, (1000 - 800) / 2,
-                (600 - 550) / 2);
-        howToPane.getChildren().add(howToPlayImageView);
+        ImageView howToPlayImageView = createImageView(Constants.IMG_HOW_TO_PLAY, 900, 540, true, 0, 0);
 
         Image imgReturn = new Image(Constants.IMG_RETURN);
         Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
@@ -234,24 +248,24 @@ public class GUI extends Application {
 
         Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30,
                 Constants.CLICK, event -> fadeToLobby(primaryStage));
-        howToPane.getChildren().add(buttonReturn);
+
+        // StackPane centers items automatically
+        StackPane howToPane = new StackPane(lobbyMediaView, howToPlayImageView, buttonReturn);
+        howToPane.setPrefSize(1000, 600);
+        StackPane.setAlignment(buttonReturn, Pos.TOP_LEFT); // Move button to top-left
 
         Scene howToScene = new Scene(howToPane, 1000, 600);
         primaryStage.setScene(howToScene);
     }
 
-    // Method to show the credits screen
     private static void showCreditsScreen(Stage primaryStage) {
         MediaPlayer lobbyMediaPlayer = createMediaPlayer(Constants.LOBBY_VIDEO_PATH, true, MediaPlayer.INDEFINITE);
         if (lobbyMediaPlayer == null)
             return;
 
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
-        Pane creditsPane = new Pane(lobbyMediaView);
 
-        ImageView creditsImageView = createImageView(Constants.IMG_CREDITS_SCREEN, 800, 550, true, (1000 - 800) / 2,
-                (600 - 550) / 2);
-        creditsPane.getChildren().add(creditsImageView);
+        ImageView creditsImageView = createImageView(Constants.IMG_CREDITS_SCREEN, 900, 540, true, 0, 0);
 
         Image imgReturn = new Image(Constants.IMG_RETURN);
         Image imgReturnHover = new Image(Constants.IMG_RETURN_HOVER);
@@ -259,15 +273,14 @@ public class GUI extends Application {
 
         Button buttonReturn = createImageButton(imgReturn, imgReturnHover, imgReturnClick, 5, 10, 30, 30,
                 Constants.CLICK, event -> fadeToLobby(primaryStage));
-        creditsPane.getChildren().add(buttonReturn);
+
+        // StackPane centers items automatically
+        StackPane creditsPane = new StackPane(lobbyMediaView, creditsImageView, buttonReturn);
+        creditsPane.setPrefSize(1000, 600);
+        StackPane.setAlignment(buttonReturn, Pos.TOP_LEFT); // Move button to top-left
 
         Scene creditsScene = new Scene(creditsPane, 1000, 600);
         primaryStage.setScene(creditsScene);
-    }
-
-    // Method to create an image button
-    private static Button createImageButton(Image image, double x, double y, double width, double height) {
-        return createImageButton(image, null, null, x, y, width, height, null, null);
     }
 
     // Overloaded method to create an image button with hover and click effects
@@ -354,10 +367,10 @@ public class GUI extends Application {
                 setButtonGraphic(buttonMusic, imgMusic, 30, 30); // Set to MusicOn when playing
             }
             isMusicOn = !isMusicOn;
-        }); 
+        });
 
         Button buttonSFX = createSFXButton(imgSFX, imgSFXClick, imgSFXOff, 920, 500, 30, 30, Constants.CLICK, null);
-        
+
         buttonSFX.setOnAction(event -> {
             if (isSFXOn) {
                 setButtonGraphic(buttonSFX, imgSFXOff, 30, 30); // Set to MusicOff when paused
@@ -522,10 +535,10 @@ public class GUI extends Application {
 
     // Method to show the Hangman game screen
     public static void showHangmanScreen(Stage primaryStage, String category) {
+
         bgm.stopMusic();
+        primaryStage.close();
         Hangman hangman = new Hangman(category); // Pass category in constructor
         hangman.start(new Stage());
-
-        primaryStage.close();
     }
 }
