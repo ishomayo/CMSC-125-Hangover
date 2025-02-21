@@ -35,6 +35,12 @@ Download and install JavaFX SDK 23.0.2:
 - **[JavaFX SDK](https://openjfx.io/)**
 - Extract it to a directory `C:\Program Files\Java\jdk-21`
 
+# To Run on Command Line
+Note that you should have JavaFX before proceeding...
+```
+java --module-path "C:\Program Files\Java\javafx-sdk-23.0.2\lib" --add-modules javafx.controls,javafx.fxml,javafx.swing,javafx.media --add-exports javafx.base/com.sun.javafx=ALL-UNNAMED -jar CMSC-125-Hangover.jar
+```
+
 # Interface
 1. You will be greeted with a splash screen.<br/><br/>![image](https://github.com/user-attachments/assets/0762dfe5-edb8-42ae-9939-85041413051b)<br/>
 2. Lobby Screen with a Start Game Button, How to Play Button, Credits Button, and an Exit Button. Also, functional music and sound effects button are included.<br/><br/>![image](https://github.com/user-attachments/assets/3db2f837-c74a-4db4-9bb9-2176d978dba4)<br/>
