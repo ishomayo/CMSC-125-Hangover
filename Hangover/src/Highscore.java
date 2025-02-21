@@ -5,14 +5,17 @@ import java.util.List;
 class HighScore {
     private int number;
 
-    public HighScore() {}
+    public HighScore() {
+    }
 
     public int showHighScore(String category) {
         try {
-            Path path = Paths.get("C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\src\\resources\\High Score " + category + ".txt");
+            Path path = Paths
+                    .get("C:\\Users\\Eugene\\Desktop\\Git\\CMSC-125-Hangover\\Hangover\\src\\resources\\High Score "
+                            + category + ".txt");
 
             System.out.println("Checking file: " + path);
-            
+
             if (!Files.exists(path)) {
                 System.out.println("File not found, returning 0.");
                 return 0;
@@ -52,7 +55,8 @@ class HighScore {
 
             int currentHighScore = showHighScore(category);
             if (newHighScore > currentHighScore) {
-                Files.write(path, String.valueOf(newHighScore).getBytes(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(path, String.valueOf(newHighScore).getBytes(), StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
                 System.out.println("New high score saved: " + newHighScore);
             } else {
                 System.out.println("Score is not higher than the current high score. No update.");

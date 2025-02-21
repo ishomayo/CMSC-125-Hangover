@@ -16,12 +16,12 @@ public class WordDB {
             // Load the file from inside the JAR/EXE
             InputStream input = getClass().getClassLoader().getResourceAsStream(DATA_PATH);
             if (input == null) {
-                throw new RuntimeException("❌ ERROR: data.txt NOT FOUND!");
+                throw new RuntimeException("ERROR: data.txt NOT FOUND!");
             }
 
             // Debugging: Check if file exists
             URL resourceUrl = getClass().getClassLoader().getResource(DATA_PATH);
-            System.out.println("🔍 File URL: " + (resourceUrl == null ? "NOT FOUND" : resourceUrl));
+            System.out.println("File URL: " + (resourceUrl == null ? "NOT FOUND" : resourceUrl));
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
                 String line;
@@ -35,7 +35,7 @@ public class WordDB {
                 }
             }
         } catch (IOException e) {
-            System.err.println("❌ ERROR: " + e.getMessage());
+            System.err.println("ERROR: " + e.getMessage());
         }
     }
 
@@ -49,6 +49,6 @@ public class WordDB {
         }
         String word = categoryValues[rand.nextInt(categoryValues.length)];
 
-        return new String[]{category.toUpperCase(), word.toUpperCase()};
+        return new String[] { category.toUpperCase(), word.toUpperCase() };
     }
 }

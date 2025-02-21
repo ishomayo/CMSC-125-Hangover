@@ -37,6 +37,8 @@ import javafx.util.Duration;
 
 // import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 
 // import javax.swing.JLabel;
@@ -59,6 +61,7 @@ public class Hangman extends Application {
     private HighScore highScore;
     private Label hangmanImage, categoryLabel, hiddenWordLabel, scoreTextLabel, timerLabel, highScoreLabel;
     private Pane hiddenWordPane, letterPane1, letterPane2, letterPane3;
+    private Set<Character> guessedLetters = new HashSet<>();
 
     private static boolean isMusicOn = true; // Initially true since music is playing by default
 
@@ -104,7 +107,7 @@ public class Hangman extends Application {
         Scene scene = new Scene(root);
 
         Image backgroundImage = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\InGame_Screen.jpg");
+                "/resources1/InGame_Screen.jpg");
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
         root.setBackground(new Background(background));
@@ -403,11 +406,11 @@ public class Hangman extends Application {
         root.getChildren().add(inputField);
 
         Image defaultIcon = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\default_icon.png");
+                "/resources1/Letters/default_icon.png");
         Image hoverIcon = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\hover_icon.png");
+                "/resources1/Letters/hover_icon.png");
         Image clickedIcon = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\clicked_icon.png");
+                "/resources1/Letters/clicked_icon.png");
 
         // Enter button with different state icons
 
@@ -473,7 +476,7 @@ public class Hangman extends Application {
 
     private Label createLetterLabel(char c) {
         Image originalImage = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\" + c + "_default.png");
+                "/resources1/Letters/" + c + "_default.png");
 
         // Scale the image to fit the Label size
         ImageView imageView = new ImageView(originalImage);
@@ -505,7 +508,7 @@ public class Hangman extends Application {
             panelHeight = maxHeight;
 
         // Get the image corresponding to the current incorrect guess
-        String imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources\\"
+        String imagePath = "/resources/"
                 + (incorrectGuesses + 1) + ".png";
         Image originalImage = new Image(imagePath);
 
@@ -533,10 +536,19 @@ public class Hangman extends Application {
         String input = inputField.getText().toUpperCase();
         if (input.length() == 1 && input.charAt(0) >= 'A' && input.charAt(0) <= 'Z') {
 
+            char guessedLetter = input.charAt(0);
+
+            // Check if the letter was already guessed
+            if (guessedLetters.contains(guessedLetter)) {
+                System.out.println("You have already guessed this letter.");
+                return; // Exit the method if the letter has been guessed
+            }
+
+            guessedLetters.add(guessedLetter); // Mark the letter as guessed
+
             MusicPlayer musicPlayer = new MusicPlayer();
             MusicPlayer impendingDoomPlayer = new MusicPlayer();
 
-            char guessedLetter = input.charAt(0);
             inputField.setText(""); // Clear the input field
 
             // Load the image based on the correct or incorrect state
@@ -544,12 +556,12 @@ public class Hangman extends Application {
 
             if (wordChallenge[1].contains(String.valueOf(guessedLetter))) {
                 // Correct guess
-                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\"
+                imagePath = "/resources1/Letters/"
                         + guessedLetter
                         + "_correct.png";
             } else {
                 // Incorrect guess
-                imagePath = "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\"
+                imagePath = "/resources1/Letters/"
                         + guessedLetter
                         + "_incorrect.png";
                 incorrectGuesses++;
@@ -575,7 +587,6 @@ public class Hangman extends Application {
             }
 
             // Load and scale the icon
-            // Image originalImage = new Image(imagePath);
             Image scaledImage = new Image(imagePath, 50, 50, true, true);
 
             // Set the scaled icon to the corresponding letter
@@ -588,11 +599,11 @@ public class Hangman extends Application {
                     score += 1;
                 }
 
-                if (category.equals("easy") && secondsT <= 45) {
+                if (category.equals("easy")) {
                     score = score + (45 - secondsT);
-                } else if (category.equals("average") && secondsT <= 60) {
+                } else if (category.equals("average")) {
                     score = score + (60 - secondsT);
-                } else if (category.equals("difficult") && secondsT <= 75) {
+                } else if (category.equals("difficult")) {
                     score = score + (75 - secondsT);
                 }
 
@@ -617,7 +628,7 @@ public class Hangman extends Application {
 
         // Background Image
         Image backgroundImage = new Image(
-                "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Result_Screen.png");
+                "/resources1/Result_Screen.png");
         System.out.println("Image loaded: " + backgroundImage.getWidth() + "x" + backgroundImage.getHeight()); // Debugging
 
         BackgroundImage background = new BackgroundImage(backgroundImage, BackgroundRepeat.NO_REPEAT,
@@ -813,7 +824,7 @@ public class Hangman extends Application {
         letterLabels.forEach((k, v) -> {
             // Reset the label with the default image and state
             Image defaultImage = new Image(
-                    "file:D:\\125 Hangman\\CMSC-125-Hangover\\Hangover\\src\\resources1\\Letters\\" + k
+                    "/resources1/Letters/" + k
                             + "_default.png");
             ImageView imageView = new ImageView(defaultImage);
             imageView.setFitWidth(50);

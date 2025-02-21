@@ -208,23 +208,15 @@ public class GUI extends Application {
 
         MediaView lobbyMediaView = createMediaView(lobbyMediaPlayer, 1000, 600);
 
-        Image selectDifficultyImage = new Image(
-                "file:D:/125 Hangman/CMSC-125-Hangover/Hangover/resources/SelectDifficulty.png");
-        ImageView difficultyImageView = new ImageView(selectDifficultyImage);
-        difficultyImageView.setPreserveRatio(true);
-        difficultyImageView.setFitWidth(600);
-        difficultyImageView.setLayoutX((1000 - 600) / 2); // Center horizontally
-        difficultyImageView.setLayoutY(50); // Offset from the top
-
         // New image in the center of the screen
-        Image centerImage = new Image("file:D:/125 Hangman/CMSC-125-Hangover/Hangover/src/resources1/SelectScreen.png");
+        Image centerImage = new Image("/resources1/SelectScreen.png");
         ImageView centerImageView = new ImageView(centerImage);
         centerImageView.setPreserveRatio(true);
         centerImageView.setFitWidth(900); // Adjust as needed
         centerImageView.setLayoutX((1000 - 900) / 2); // Center horizontally
         centerImageView.setLayoutY(9); // Center vertically
 
-        Pane categoryPane = new Pane(lobbyMediaView, difficultyImageView, centerImageView);
+        Pane categoryPane = new Pane(lobbyMediaView, centerImageView);
         addCategoryButtonsToPane(categoryPane, primaryStage);
 
         Scene categoryScene = new Scene(categoryPane, 1000, 600);
