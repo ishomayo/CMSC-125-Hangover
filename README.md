@@ -13,19 +13,25 @@ This includes the source code for Hangover. This is a **JavaFX-based** applicati
 The elements (videos, and such) for this project can be accessed through this link:<br/>
 [Google Drive Link for Elements](https://drive.google.com/drive/folders/1Il7qDbXSA1z9Wi97Sb6Amgke5ejAP4kV?usp=sharing)<br/>
 
-## 🚀 Requirements  
+## Requirements  
 
-### ✅ Java Development Kit (JDK 21)  
+### Java Development Kit (JDK 21)  
 Download and install Java 21:  
 - **[Oracle JDK 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)**
 - **[OpenJDK 21](https://jdk.java.net/21/)**  
 
-#### 📌 Verify Installation  
+#### Verify Installation  
 Run the following command in the terminal to check your Java version:  
 ```sh
 java -version
 ```
 Expected output:<br/>
+```
 java version "21.0.2" 2024-01-16 LTS<br/>
 Java(TM) SE Runtime Environment (build 21.0.2+13-LTS)
-
+```
+### JavaFX SDK 23.0.2
+Download and install JavaFX SDK 23.0.2:  
+- **[JavaFX SDK](https://openjfx.io/)**
+- Extract it to a directory `C:\Program Files\Java\jdk-21`
+  
