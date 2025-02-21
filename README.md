@@ -1,7 +1,7 @@
 # Hangover
 ## This is a repository for the implementation of a variation of a Hangman game for a requirement in the course CMSC 125 - M.
 
-This includes the source code and technical report for Hangover.
+This includes the source code for Hangover. This is a **JavaFX-based** application built using **Java 21** and **JavaFX SDK 23.0.2**.
 
 **Group Members**
   1. Dalomias, Matthew
@@ -13,6 +13,14 @@ This includes the source code and technical report for Hangover.
 The elements (videos, and such) for this project can be accessed through this link:<br/>
 [Google Drive Link for Elements](https://drive.google.com/drive/folders/1Il7qDbXSA1z9Wi97Sb6Amgke5ejAP4kV?usp=sharing)<br/>
 
-# How to Run
+## 🚀 Requirements  
 
-To run the application..
+### ✅ Java Development Kit (JDK 21)  
+Download and install Java 21:  
+- **[Oracle JDK 21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)**
+- **[OpenJDK 21](https://jdk.java.net/21/)**  
+
+#### 📌 Verify Installation  
+Run the following command in the terminal to check your Java version:  
+```sh
+java -version
