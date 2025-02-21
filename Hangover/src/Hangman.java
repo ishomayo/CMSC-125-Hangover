@@ -589,7 +589,7 @@ public class Hangman extends Application {
                 }
 
                 if (category.equals("easy") && secondsT <= 45) {
-                    score = score + ((45 - secondsT) / 2);
+                    score = score + (45 - secondsT);
                 } else if (category.equals("average") && secondsT <= 60) {
                     score = score + (60 - secondsT);
                 } else if (category.equals("difficult") && secondsT <= 75) {
