@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\Eugene\Desktop\Git\CMSC-125-Hangover\CMSC-125-Hangover.jar</jar>
+  <outfile>C:\Users\Eugene\Desktop\Git\CMSC-125-Hangover\Hangover.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>high</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>true</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\Eugene\Desktop\Git\CMSC-125-Hangover\Hangover\src\resources1\LogoApp.ico</icon>
+  <classPath>
+    <mainClass>App</mainClass>
+  </classPath>
+  <jre>
+    <path>C:\Program Files\Java\jdk-21</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>true</requires64Bit>
+    <minVersion>21.0.6</minVersion>
+    <maxVersion></maxVersion>
+    <opt>--module-path &quot;C:\Program Files\Java\javafx-sdk-23.0.2\lib&quot; --add-modules javafx.controls,javafx.fxml,javafx.swing,javafx.media --add-exports javafx.base/com.sun.javafx=ALL-UNNAMED</opt>
+  </jre>
+</launch4jConfig>

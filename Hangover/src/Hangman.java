@@ -812,6 +812,8 @@ public class Hangman extends Application {
         wordChallenge = wordDB.loadChallenge(category);
         incorrectGuesses = 0;
 
+        guessedLetters.clear();
+
         secondsT = 0;
         timer1.playFromStart();
 
