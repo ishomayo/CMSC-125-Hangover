@@ -27,8 +27,8 @@ java -version
 ```
 #### Expected output:<br/>
 ```
-java version "21.0.2" 2024-01-16 LTS<br/>
-Java(TM) SE Runtime Environment (build 21.0.2+13-LTS)
+java 21.0.6 2025-01-21 LTS
+Java(TM) SE Runtime Environment (build 21.0.6+8-LTS-188)
 ```
 ### JavaFX SDK 23.0.2
 Download and install JavaFX SDK 23.0.2:  
