@@ -33,7 +33,7 @@ Java(TM) SE Runtime Environment (build 21.0.6+8-LTS-188)
 ### JavaFX SDK 23.0.2
 Download and install JavaFX SDK 23.0.2:  
 - **[JavaFX SDK](https://openjfx.io/)**
-- Extract it to a directory `C:\Program Files\Java\jdk-21`
+- Extract it to a directory `C:\Program Files\Java\here`
 
 # To Run on Command Line
 Note that you should have JavaFX before proceeding...
